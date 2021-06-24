@@ -1,4 +1,4 @@
-﻿Function Get-selectDisk
+﻿Function SelectDisk
 {
     Param (
         [Object]$result,
@@ -13,7 +13,7 @@
     If (!($ProcessCopyPlots -eq $null)){$RequiredSpace = 204}else{$RequiredSpace = 102}
 
     # Displays information about the space required
-    printMsg -msg "Note: the space requirement is ""$RequiredSpace Go"" (see: note in the script)"
+    PrintMsg -msg "Note: the space requirement is ""$RequiredSpace Go"" (see: note in the script)"
 
     # Pausing
     start-sleep -s $smallTime
@@ -30,7 +30,7 @@
         if ($diskSpace -ge $RequiredSpace)
         {    
             # Displays available capacity
-            printMsg -msg "Final disk used $($_):\ -> Free space remaining $diskSpace Go"
+            PrintMsg -msg "Final disk used $($_):\ -> Free space remaining $diskSpace Go"
 
             # Recovers the letter of the hard disk
             return "$($_):\"

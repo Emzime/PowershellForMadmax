@@ -18,8 +18,8 @@ Function ValPath {
 }
 
 
-# @Example printMsg -msg "Mon super message"  -backColor "black" -sharpColor "red" -textColor "blue"
-Function printMsg {
+# @Example PrintMsg -msg "Mon super message"  -backColor "black" -sharpColor "red" -textColor "blue"
+Function PrintMsg {
     Param (
         [Parameter(Mandatory=$true)]  [String]$msg,
         [Parameter(Mandatory=$false)]  [String]$backColor = "black",
