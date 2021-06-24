@@ -32,10 +32,6 @@ $config['logDir'] = valPath -path $config['logDir']
 $smallTime = "1"
 $bigTime = "5"
 
-# Define var
-$ScriptDir = @{ scriptDir = $ScriptDir }
-$ScriptName = @{ ScriptName = $ScriptName }
-
 ###############################################
 #  Verification and allocation of disk space  #
 ###############################################
@@ -45,11 +41,6 @@ $finaldir = SelectDisk -result $config['finaldir'] -smallTime $smallTime -bigTim
 
 # Takes a break
 start-sleep -s $smallTime
-
-
-# Start script
-restart($hdd,$config,$ScriptDir,$ScriptName,$smallTime,$bigTime)
-
 
 #####################################
 #  Launching plot creation process  #
@@ -72,4 +63,4 @@ $ChiaPlot = (Get-Process -Name "chia_plot" -Ea SilentlyContinue)
 start-sleep -s $smallTime
 
 # Start script
-restart($result)
+#restart()
