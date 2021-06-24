@@ -12,7 +12,7 @@ $ScriptName = $MyInvocation.MyCommand.Name
 Import-Module $ScriptDir\PSYaml
 # Function import
 ."$ScriptDir\Functions\Utility.ps1"
-."$ScriptDir\Functions\selectDisk.ps1"
+."$ScriptDir\Functions\SelectDisk.ps1"
 
 # Get config.yaml file
 [string[]]$fileContent = Get-Content "config.yaml"
@@ -41,20 +41,11 @@ $ScriptName = @{ ScriptName = $ScriptName }
 ###############################################
 
 # retrieves the values
-$finaldir = Get-selectDisk -result $config['finaldir'] -smallTime $smallTime -bigTime $bigTime
-pause
-# Takes a break
-start-sleep -s $smallTime
-
-##########################
-#  Displays information  #
-##########################
-
-# Start script
-msg($hdd,$config)
+$finaldir = SelectDisk -result $config['finaldir'] -smallTime $smallTime -bigTime $bigTime
 
 # Takes a break
 start-sleep -s $smallTime
+
 
 # Start script
 restart($hdd,$config,$ScriptDir,$ScriptName,$smallTime,$bigTime)
