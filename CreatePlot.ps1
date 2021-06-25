@@ -69,9 +69,12 @@ if(($ChiaPlotProcess) -eq $null)
 
     # Start script
     $CreatePlots = CreatePlots -threads $config['threads'] -buckets $config['buckets'] -buckets3 $config['buckets3'] -farmerkey $config['farmerkey'] -poolkey $config['poolkey'] -tmpdir $config['tmpdir'] -tmpdir2 $config['tmpdir2'] -finaldir $finaldir -tmptoggle $config['tmptoggle'] -chiaPlotterLoc $config['chiaPlotterLoc'] -logs $config['logs'] -logDir $config['logDir'] -smallTime $smallTime -midTime $midTime -bigTime $bigTime
+ 
+    # Affichage des logs de création (A REVOIR NE FONCTIONNE PAS)
+    #Write-Host @CreatePlots
 
     # Displays the process ID
-    PrintMsg -msg "Process ID for creating plot is $CreatePlots"
+    PrintMsg -msg "Process ID for creating plot is" $CreatePlots.ID
 
     # Takes a break
     start-sleep -s $smallTime
@@ -84,7 +87,7 @@ if(($ChiaPlotProcess) -eq $null)
 }
 else
 {
-    # Displays information about the space required
+    # Displays error message
     PrintMsg -msg "Plot creation is already in progress, close this window in $bigTime seconds" -blu $true -backColor "black" -sharpColor "red" -textColor "red"
 
     # Takes a break

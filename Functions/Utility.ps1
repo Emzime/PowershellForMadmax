@@ -147,8 +147,41 @@ function CreatePlots
 
     # Starts the creation of plots 
     $creating = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --tmpdir $tmpdir --farmerkey $farmerkey --poolkey $poolkey --count 1
-
-    # Get process id
-    $creatingPlotsID = $creating.ID
+        
     return $creating
+}
+
+
+# Logs (A REVOIR NE FONCTIONNE PAS)
+Function Logs
+{
+    # Launch in admin mode if logs are enabled
+    if($config['logs'])
+    {
+        if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))  
+        {  
+          $arguments = "& '" +$myinvocation.mycommand.definition + "'"
+          Start-Process powershell -Verb runAs -ArgumentList $arguments
+          Break
+        }
+
+        #  Log file time stamp:
+        $logTime = Get-Date -Format "MM-dd-yyyy_hh-mm-ss"
+
+        # Log directory
+        $logName = $config['logDir']
+        $logName = "$logName\log-$logTime.log"
+
+        # Start logging
+        start-transcript -path "$logDir"
+    }
+
+
+
+
+    # Stop logs if activated
+    if($config['logs'])
+    {
+        Stop-Transcript
+    }
 }
