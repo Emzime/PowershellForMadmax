@@ -112,6 +112,10 @@ Function MovePlots
 
     # Starts the process
     $ProcessMovePlots = [Diagnostics.Process]::Start($StartMovePlots)
+
+    # Get process id
+    $movePlotsID = $ProcessMovePlots.ID
+    return $movePlotsID
 }
 
 # Launching the plot creation
@@ -142,5 +146,9 @@ function CreatePlots
     start-sleep -s $smallTime
 
     # Starts the creation of plots 
-    .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --tmpdir $tmpdir --farmerkey $farmerkey --poolkey $poolkey --count 1
+    $creating = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --tmpdir $tmpdir --farmerkey $farmerkey --poolkey $poolkey --count 1
+
+    # Get process id
+    $creatingPlotsID = $creating.ID
+    return $creating
 }
