@@ -85,3 +85,29 @@ Function SelectDisk
         }
     }
 }
+
+# Launching process of moving the plots
+Function MovePlots
+{
+    Param (
+        [string]$tmpdir,
+        [String]$finaldir,
+        [int]$sleepTime,
+        [int]$smallTime,
+        [int]$bigTime
+    )
+
+    # Starts the move window if the process does not exist
+    $StartMovePlots = new-object System.Diagnostics.ProcessStartInfo
+    $StartMovePlots.FileName = "$pshome\powershell.exe"
+    $StartMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle=`'MovePlots`'; while ('$true') {robocopy $tmpdir $finaldir *.plot /mov; sleep $sleepTime}"
+
+    # Displays information
+    PrintMsg -msg "MovePlots process in progress..."
+
+    # Takes a break
+    start-sleep -s $smallTime
+
+    # Starts the process
+    $ProcessMovePlots = [Diagnostics.Process]::Start($StartMovePlots)
+}
