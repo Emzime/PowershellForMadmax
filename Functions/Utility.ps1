@@ -111,3 +111,33 @@ Function MovePlots
     # Starts the process
     $ProcessMovePlots = [Diagnostics.Process]::Start($StartMovePlots)
 }
+
+# Launching the plot creation
+function CreatePlots
+{
+    Param (
+        [Int]$bigTime,
+        [Int]$threads,
+        [Int]$buckets,
+        [Int]$buckets3,
+        [Int]$smallTime,
+        [String]$logDir,
+        [string]$tmpdir,
+        [String]$poolkey,
+        [string]$tmpdir2,
+        [String]$finaldir,
+        [String]$farmerkey,
+        [String]$chiaPlotterLoc,
+        [bool]$logs,
+        [bool]$tmptoggle
+    )
+    
+    # Displays information
+    PrintMsg -msg "CreatePlots process in progress..."
+
+    # Takes a break
+    start-sleep -s $smallTime
+
+    # Starts the creation of plots 
+    .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --tmpdir $tmpdir --farmerkey $farmerkey --poolkey $poolkey --count 1
+}

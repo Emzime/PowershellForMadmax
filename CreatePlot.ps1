@@ -9,7 +9,6 @@ Import-Module $ScriptDir\PSYaml
 
 # Function import
 ."$ScriptDir\Functions\Utility.ps1"
-."$ScriptDir\Functions\Creating.ps1"
 
 # Get config.yaml file
 [string[]]$fileContent = Get-Content "config.yaml"
@@ -39,27 +38,10 @@ start-sleep -s $smallTime
 # Launch of the plot movement
 $movePlots = MovePlots -tmpdir $config['tmpdir'] -finaldir $finaldir -smallTime $smallTime -bigTime $bigTime -sleepTime $sleepTime
 
-
 # Takes a break
 start-sleep -s $smallTime
 
 # Start script
-#$Creating = Creating -threads $config['threads'] -buckets $config['buckets'] -buckets3 $config['buckets3'] -farmerkey $config['farmerkey'] -poolkey $config['poolkey'] -tmpdir $config['tmpdir'] -tmpdir2 $config['tmpdir2'] -finaldir $finaldir -tmptoggle $config['tmptoggle'] -chiaPlotterLoc $config['chiaPlotterLoc'] -logs $config['logs'] -logDir $config['logDir'] -smallTime $smallTime -bigTime $bigTime
+$CreatePlots = CreatePlots -threads $config['threads'] -buckets $config['buckets'] -buckets3 $config['buckets3'] -farmerkey $config['farmerkey'] -poolkey $config['poolkey'] -tmpdir $config['tmpdir'] -tmpdir2 $config['tmpdir2'] -finaldir $finaldir -tmptoggle $config['tmptoggle'] -chiaPlotterLoc $config['chiaPlotterLoc'] -logs $config['logs'] -logDir $config['logDir'] -smallTime $smallTime -bigTime $bigTime
 
-# Takes a break
-#start-sleep -s $bigTime
 
-# We are looking for the creative process
-#$ChiaPlotProcess = (Get-Process -Name "chia_plot" -Ea SilentlyContinue)
-
-# Takes a break
-#start-sleep -s $smallTime
-
-# Stop logs if activated
-#if($config['logs'])
-#{
-#    Stop-Transcript
-#}
-
-# Start script
-#$restart = restart -result $config['finaldir'] -smallTime $smallTime -bigTime $bigTime
