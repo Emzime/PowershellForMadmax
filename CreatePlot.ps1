@@ -1,18 +1,15 @@
-###################################
-#   IMPORTING THE CONFIGURATION   #
-###################################
-
 # Load PSYaml module for read yaml file
 $ScriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
 
 # Search for the name of the script
 $ScriptName = $MyInvocation.MyCommand.Name
 
-# file import
+# File import
 Import-Module $ScriptDir\PSYaml
+
 # Function import
 ."$ScriptDir\Functions\Utility.ps1"
-."$ScriptDir\Functions\SelectDisk.ps1"
+."$ScriptDir\Functions\Creating.ps1"
 
 # Get config.yaml file
 [string[]]$fileContent = Get-Content "config.yaml"
@@ -23,44 +20,46 @@ foreach ($line in $fileContent) { $content = $content + "`n" + $line }
 $config = ConvertFrom-YAML $content
 
 # Define valpath ( -isDir $true si fichier)
+$config['logDir'] = valPath -path $config['logDir']
 $config['tmpdir'] = valPath -path $config['tmpdir']
 $config['tmpdir2'] = valPath -path $config['tmpdir2']
 $config['chiaPlotterLoc'] = valPath -path $config['chiaPlotterLoc']
-$config['logDir'] = valPath -path $config['logDir']
 
-# Define break
-$smallTime = "1"
-$bigTime = "5"
+# Define break time
+$sleepTime = 300
+$smallTime = 1
+$bigTime = 5
 
-###############################################
-#  Verification and allocation of disk space  #
-###############################################
-
-# retrieves the values
-$finaldir = SelectDisk -result $config['finaldir'] -smallTime $smallTime -bigTime $bigTime
+# Verification and allocation of disk space
+$finaldir = SelectDisk -finaldir $config['finaldir'] -smallTime $smallTime -bigTime $bigTime
 
 # Takes a break
 start-sleep -s $smallTime
 
-#####################################
-#  Launching plot creation process  #
-#####################################
+# Launch of the plot movement
+$movePlots = MovePlots -tmpdir $config['tmpdir'] -finaldir $finaldir -smallTime $smallTime -bigTime $bigTime -sleepTime $sleepTime
 
-# Start script
-startCreating
 
 # Takes a break
-start-sleep -s $bigTime
+start-sleep -s $smallTime
 
-############################################################
-#  Restarts the script if the process is no longer active  #
-############################################################
+# Start script
+#$Creating = Creating -threads $config['threads'] -buckets $config['buckets'] -buckets3 $config['buckets3'] -farmerkey $config['farmerkey'] -poolkey $config['poolkey'] -tmpdir $config['tmpdir'] -tmpdir2 $config['tmpdir2'] -finaldir $finaldir -tmptoggle $config['tmptoggle'] -chiaPlotterLoc $config['chiaPlotterLoc'] -logs $config['logs'] -logDir $config['logDir'] -smallTime $smallTime -bigTime $bigTime
+
+# Takes a break
+#start-sleep -s $bigTime
 
 # We are looking for the creative process
-$ChiaPlot = (Get-Process -Name "chia_plot" -Ea SilentlyContinue)
+#$ChiaPlotProcess = (Get-Process -Name "chia_plot" -Ea SilentlyContinue)
 
 # Takes a break
-start-sleep -s $smallTime
+#start-sleep -s $smallTime
+
+# Stop logs if activated
+#if($config['logs'])
+#{
+#    Stop-Transcript
+#}
 
 # Start script
-#restart()
+#$restart = restart -result $config['finaldir'] -smallTime $smallTime -bigTime $bigTime
