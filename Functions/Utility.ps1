@@ -17,9 +17,9 @@ Function ValPath {
     return $path
 }
 
-# @Example PrintMsg -msg "Mon super message"  -backColor "black" -sharpColor "red" -textColor "blue"
-# @ User  -blu $true to back line on top
-# @ User  -bld $false to stop back line on down
+# @Example PrintMsg -msg "Mon super message" -backColor "black" -sharpColor "red" -textColor "blue"
+# @ Use  -blu $true to back line on top
+# @ Use  -bld $false to stop back line on down
 Function PrintMsg {
     Param (
         [Parameter(Mandatory=$true)]  [String]$msg,
@@ -48,6 +48,7 @@ Function SelectDisk
     Param (
         [Object]$finaldir,
         [int]$smallTime,
+        [int]$midTime,
         [int]$bigTime
     )
     
@@ -60,7 +61,7 @@ Function SelectDisk
     # Displays information about the space required
     PrintMsg -msg "Note: the space requirement is $RequiredSpace Go" -blu $true
 
-    # Pausing
+    # Takes a break
     start-sleep -s $smallTime
     
     foreach ($_ in $finaldir)
@@ -94,6 +95,7 @@ Function MovePlots
         [String]$finaldir,
         [int]$sleepTime,
         [int]$smallTime,
+        [int]$midTime,
         [int]$bigTime
     )
 
@@ -116,6 +118,7 @@ Function MovePlots
 function CreatePlots
 {
     Param (
+        [int]$midTime,
         [Int]$bigTime,
         [Int]$threads,
         [Int]$buckets,
