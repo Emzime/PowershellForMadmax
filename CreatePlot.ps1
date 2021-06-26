@@ -70,7 +70,7 @@ if(($chiaPlotProcess) -eq $null)
     # Takes a break
     start-sleep -s $smallTime
 
-    # Start script
+    # Start script (A REVOIR N AFFICHE PAS LE CONTENU DE chia_plotter)
     $createPlots = CreatePlots -threads $config["threads"] -buckets $config["buckets"] -buckets3 $config["buckets3"] -farmerkey $config["farmerkey"] -poolkey $config["poolKey"] -tmpdir $config["tmpDir"] -tmpdir2 $config["tmpDir2"] -finaldir $finalDir -tmptoggle $config["tmpToggle"] -chiaPlotterLoc $config["chiaPlotterLoc"] -logs $config["logs"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime
  
     # Displays the process ID

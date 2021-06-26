@@ -188,48 +188,44 @@ function CreatePlots
         $logOn = ""
     }
 
-    # Starts the creation of plots (RESTE DES VARIABLE A AJOUTER TEMPDIR2 etc)
+    # Starts the creation of plots (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
     $creating = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --tmpdir $tmpDir --farmerkey $farmerKey --poolkey $poolKey --count 1 $logOn
         
-    return $creating
+    Write-Host $creating
 }
 
-# Logs (A REVOIR NE FONCTIONNE PAS)
+# Logs (A REVOIR NE LOG PAS chia_plotter.exe)
 Function WriteLog
-{
-    # Launch in admin mode if logs are enabled
-    if($logs)
+{    
+    # Get datetime
+    if($PSCulture -eq "fr_FR") { $dateTime = $((get-date).ToLocalTime()).ToString("dd-MM-yyyy_HH'h'mm'm'ss") }else{ $dateTime = $((get-date).ToLocalTime()).ToString("yyyy-MM-dd_hh'h'mm'm'ss") }
+
+    # Log directorie        
+    $logsPath = "$logDir"
+
+    # Check if log directorie is ok
+    $testLogPath = Test-Path "$logsPath"
+
+    # Log name
+    $logFile = "$logsPath\Plot_$dateTime.log"
+
+    # Log content
+    $logMessage = "$dateTime"
+
+    # Checks if logs are enabled
+    if($testLogPath)
     {
-        # Get datetime
-        if($PSCulture -eq "fr_FR") { $dateTime = $((get-date).ToLocalTime()).ToString("dd-MM-yyyy_HH'h'mm'm'ss") }else{ $dateTime = $((get-date).ToLocalTime()).ToString("yyyy-MM-dd_hh'h'mm'm'ss") }
-
-        # Log directorie        
-        $logsPath = "$logDir"
-
-        # Check if log directorie is ok
-        $testLogPath = Test-Path "$logsPath"
-
-        # Log name
-        $logFile = "$logsPath\Plot_$dateTime.log"
-
-        # Log content
-        $logMessage = "$dateTime"
-
-        # Checks if logs are enabled
-        if($testLogPath)
-        {
-            # Add content to log file
-            Add-content $logFile -value $logMessage
-        }
-        else
-        {
-            # Create log repertorie if not exists
-            New-Item -Path $logsPath -ItemType Container
-            # Add content to log file
-            Add-content $logFile -value $logMessage
-        }
-
-        # Displays information
-        PrintMsg -msg $UTlang.LogsInProgress -msg2 "$logFile"
+        # Add content to log file
+        Add-content $logFile -value $logMessage
     }
+    else
+    {
+        # Create log repertorie if not exists
+        New-Item -Path $logsPath -ItemType Container
+        # Add content to log file
+        Add-content $logFile -value $logMessage
+    }
+
+    # Displays information
+    PrintMsg -msg $UTlang.LogsInProgress -msg2 "$logFile"    
 }
