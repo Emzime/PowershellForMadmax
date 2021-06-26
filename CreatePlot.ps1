@@ -8,7 +8,7 @@ $scriptName = $MyInvocation.MyCommand.Name
 Import-Module $scriptDir\PSYaml
 
 # Intenationalization import
-$lang = Import-LocalizedData -BaseDirectory Lang
+$CPlang = Import-LocalizedData -BaseDirectory Lang
 
 # Importing functions
 ."$scriptDir\Functions\Utility.ps1"
@@ -59,25 +59,22 @@ if(($chiaPlotProcess) -eq $null)
         $movePlots = MovePlots -tmpdir $config["tmpDir"] -finaldir $finalDir -smallTime $smallTime -midTime $midTime -bigTime $bigTime -sleepTime $sleepTime
 
         # Displays the process ID
-        PrintMsg -msg "Process ID for moving plot is $movePlots"
+        PrintMsg -msg $CPlang.MovingProcessID -msg2 "$movePlots"
     }
     else
     {
         # Displays error message
-        PrintMsg -msg "The displacement process ($movePlots) is already underway"
+        PrintMsg -msg $CPlang.MovingAlreadyLaunch -msg2 $movePlots
     }
-    
+
     # Takes a break
     start-sleep -s $smallTime
 
     # Start script
     $createPlots = CreatePlots -threads $config["threads"] -buckets $config["buckets"] -buckets3 $config["buckets3"] -farmerkey $config["farmerkey"] -poolkey $config["poolKey"] -tmpdir $config["tmpDir"] -tmpdir2 $config["tmpDir2"] -finaldir $finalDir -tmptoggle $config["tmpToggle"] -chiaPlotterLoc $config["chiaPlotterLoc"] -logs $config["logs"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime
  
-    # Affichage des logs de création (A REVOIR NE FONCTIONNE PAS)
-    Write-Host @createPlots
-
     # Displays the process ID
-    PrintMsg -msg "Process ID for creating plot is "$createPlots.ID
+    PrintMsg -msg $CPlang.CreatePlotsID -msg2 $createPlots.ID
 
     # Takes a break
     start-sleep -s $smallTime
@@ -85,11 +82,12 @@ if(($chiaPlotProcess) -eq $null)
 else
 {
     # Displays error message
-    PrintMsg -msg "Plot creation is already in progress, close this window in $bigTime seconds" -blu $true -backColor "black" -sharpColor "red" -textColor "red"
+    PrintMsg -msg $CPlang.CreateAlreadyLaunch -msg2 $bigTime -msg3 $lang.Seconds -blu $true -backColor "black" -sharpColor "red" -textColor "red"
 
     # Takes a break
     start-sleep -s $bigTime
-
     exit
 }
+
+# Debug
 pause
