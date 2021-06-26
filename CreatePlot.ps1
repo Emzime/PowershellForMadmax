@@ -25,6 +25,7 @@ $config = ConvertFrom-YAML $content
 $config["logDir"]   = ValPath -path $config["logDir"]
 $config["tmpDir"]   = ValPath -path $config["tmpDir"]
 $config["tmpDir2"]  = ValPath -path $config["tmpDir2"]
+$config["logDirMoved"]  = ValPath -path $config["logDirMoved"]
 $config["chiaPlotterLoc"] = ValPath -path $config["chiaPlotterLoc"]
 
 # Define break time
@@ -32,6 +33,16 @@ $sleepTime = 300
 $smallTime = 1
 $midTime = 5
 $bigTime = 10
+
+# Set the date and time
+if(($PSCulture) -eq "fr-FR") 
+{ 
+    $dateTime = $((get-date).ToLocalTime()).ToString("dd-MM-yyyy_HH'h'mm'm'ss") 
+}
+else
+{ 
+    $dateTime = $((get-date).ToLocalTime()).ToString("yyyy-MM-dd_hh'h'mm'm'ss") 
+}
 
 # check if the creation process is in progress
 $chiaPlotProcess = (Get-Process -Name "chia_plot" -erroraction "silentlycontinue")
@@ -56,7 +67,7 @@ if(($chiaPlotProcess) -eq $null)
     if(($MovePlotProcess) -eq $null)
     {
         # Launch plot movement
-        $movePlots = MovePlots -tmpdir $config["tmpDir"] -finaldir $finalDir -smallTime $smallTime -midTime $midTime -bigTime $bigTime -sleepTime $sleepTime
+        $movePlots = MovePlots -tmpdir $config["tmpDir"] -finaldir $finalDir -logs $config["logsMoved"] -logDir $config["logDirMoved"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -sleepTime $sleepTime -dateTime $dateTime
 
         # Displays the process ID
         PrintMsg -msg $CPlang.MovingProcessID -msg2 "$movePlots"
@@ -71,10 +82,23 @@ if(($chiaPlotProcess) -eq $null)
     start-sleep -s $smallTime
 
     # Start script (A REVOIR N AFFICHE PAS LE CONTENU DE chia_plotter)
-    $createPlots = CreatePlots -threads $config["threads"] -buckets $config["buckets"] -buckets3 $config["buckets3"] -farmerkey $config["farmerkey"] -poolkey $config["poolKey"] -tmpdir $config["tmpDir"] -tmpdir2 $config["tmpDir2"] -finaldir $finalDir -tmptoggle $config["tmpToggle"] -chiaPlotterLoc $config["chiaPlotterLoc"] -logs $config["logs"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime
- 
+    $createPlots = CreatePlots -threads $config["threads"] -buckets $config["buckets"] -buckets3 $config["buckets3"] -farmerkey $config["farmerkey"] -poolkey $config["poolKey"] -tmpdir $config["tmpDir"] -tmpdir2 $config["tmpDir2"] -finaldir $finalDir -tmptoggle $config["tmpToggle"] -chiaPlotterLoc $config["chiaPlotterLoc"] -logs $config["logs"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -dateTime $dateTime
+
     # Displays the process ID
     PrintMsg -msg $CPlang.CreatePlotsID -msg2 $createPlots.ID
+
+    # On test si le fichier log existe
+    $testPath = Test-Path "$config['logDir']\created_log_$dateTime.log"
+
+    # si le fichier existe, on l'affiche
+    if($testPath)
+    {
+        Get-Content -Path "$config['logDir']\created_log_$dateTime.log"
+    }
+    else
+    {
+        echo $createPlots
+    }
 
     # Takes a break
     start-sleep -s $smallTime

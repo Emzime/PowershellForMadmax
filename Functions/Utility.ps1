@@ -33,44 +33,37 @@ Function PrintMsg {
         [Parameter(Mandatory=$false)]  [String]$textColor = "Green",
         [Parameter(Mandatory=$false)]  [bool]$blu = $false,
         [Parameter(Mandatory=$false)]  [bool]$bld = $true
-    )
-    
+    ) 
+
+    # Add back to line
     if($blu){$btlu = "`n"}
     if($bld){$btld = "`n"}
 
-
-    if($msg2)
+    # Condition
+    if($msg1 -AND $msg2)
     {
-        $msg2 = $msg2
-        $charCount = ($msg.Length + 2) + ($msg2.Length + 2)
+        $charCount = ($msg.Length + 2) + ($msg2.Length + 1)
     }
-    else
+    elseif($msg1 -AND $msg2 -AND $msg3)
     {
-        $msg2 = ""
-        $charCount = $msg.Length + 2
-    }
-
-    if($msg3)
-    {
-        $msg3 = $msg3
         $charCount = ($msg.Length + 2) + ($msg2.Length + 1) + ($msg3.Length + 1)
     }
     else
     {
-        $msg3 = ""
-        $charCount = ($msg.Length + 2) + ($msg2.Length + 2)
-    }
+        $charCount = ($msg.Length + 2) + ($msg2.Length + 1) + ($msg3.Length + 1)
+    } 
 
+    # Count number of #
     for ($i = 1 ; $i -le $charCount ; $i++){$sharp += "#"}
 
+    # Display message
     Write-Host ("$($btlu)$($sharp)") -ForegroundColor $sharpColor -BackgroundColor $BackColor
     Write-Host (" $($msg) $($msg2) $($msg3) ") -ForegroundColor $textColor -BackgroundColor $BackColor
     Write-Host ("$($sharp)$($btld)") -ForegroundColor $sharpColor -BackgroundColor $BackColor
 }
 
 # Verification and allocation of disk space
-Function SelectDisk
-{
+Function SelectDisk {
     Param (
         [Object]$finalDir,
         [int]$smallTime,
@@ -85,12 +78,12 @@ Function SelectDisk
     If (!($processCopyPlots -eq $null)){$requiredSpace = 204}else{$requiredSpace = 102}
 
     # Displays information about the space required
-    # PrintMsg -msg "Note: the space requirement is $requiredSpace Go" -blu $true
     PrintMsg -msg $UTlang.SpaceRequire -msg2 $requiredSpace -msg3 $UTlang.Gigaoctet -blu $true
 
     # Takes a break
     start-sleep -s $smallTime
     
+    # 
     foreach ($_ in $finalDir)
     {
         # we query the selected hard drives
@@ -121,21 +114,44 @@ Function SelectDisk
 }
 
 # Launching process of moving the plots
-Function MovePlots
-{
+Function MovePlots {
     Param (
         [string]$tmpDir,
+        [String]$logDirMoved,
         [String]$finalDir,
+        [String]$dateTime,
         [int]$sleepTime,
         [int]$smallTime,
         [int]$midTime,
-        [int]$bigTime
+        [int]$bigTime,
+        [bool]$logsMoved
     )
+
+    # Takes a break
+    start-sleep -s $smallTime
 
     # Starts the move window if the process does not exist
     $startMovePlots = new-object System.Diagnostics.ProcessStartInfo
     $startMovePlots.FileName = "$pshome\powershell.exe"
     $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy $tmpDir $finalDir *.plot /mov; sleep $sleepTime}"
+
+    # Log creation if logs are enabled
+    if($logsMoved)
+    {
+        # Displays information
+        PrintMsg -msg $UTlang.LogsInProgress -msg2 "$logDirMoved\moved_log_$dateTime.log"
+
+        # # Starts the creation of plots with logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
+        $processMovePlots = [Diagnostics.Process]::Start($startMovePlots) | tee "$logDirMoved\moved_log_$dateTime.log"
+
+        # Takes a break
+        start-sleep -s $smallTime
+    }
+    else
+    {
+        # Starts the creation of plots without logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
+        $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
+    }
 
     # Displays information
     PrintMsg -msg $UTlang.MovePlotInProgress
@@ -143,17 +159,12 @@ Function MovePlots
     # Takes a break
     start-sleep -s $smallTime
 
-    # Starts the process
-    $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
-
     # Get process id
-    $movePlotsID = $processMovePlots.ID
-    return $movePlotsID
+    return $processMovePlots.ID
 }
 
 # Launching the plot creation
-function CreatePlots
-{
+function CreatePlots {
     Param (
         [int]$midTime,
         [Int]$bigTime,
@@ -166,66 +177,35 @@ function CreatePlots
         [String]$poolKey,
         [string]$tmpDir2,
         [String]$finalDir,
+        [String]$dateTime,
         [String]$farmerKey,
         [String]$chiaPlotterLoc,
         [bool]$logs,
         [bool]$tmpToggle
     )
-    
+
     # Displays information
     PrintMsg -msg $UTlang.CreatePlotInProgress
 
     # Takes a break
     start-sleep -s $smallTime
 
-    # Logs
+    # Log creation if logs are enabled
     if($logs)
     {
-        $writeLog = WriteLog
-        $logOn = "| tee $writeLog"
-    }
-    else {
-        $logOn = ""
-    }
-
-    # Starts the creation of plots (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
-    $creating = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --tmpdir $tmpDir --farmerkey $farmerKey --poolkey $poolKey --count 1 $logOn
-        
-    Write-Host $creating
-}
-
-# Logs (A REVOIR NE LOG PAS chia_plotter.exe)
-Function WriteLog
-{    
-    # Get datetime
-    if($PSCulture -eq "fr_FR") { $dateTime = $((get-date).ToLocalTime()).ToString("dd-MM-yyyy_HH'h'mm'm'ss") }else{ $dateTime = $((get-date).ToLocalTime()).ToString("yyyy-MM-dd_hh'h'mm'm'ss") }
-
-    # Log directorie        
-    $logsPath = "$logDir"
-
-    # Check if log directorie is ok
-    $testLogPath = Test-Path "$logsPath"
-
-    # Log name
-    $logFile = "$logsPath\Plot_$dateTime.log"
-
-    # Log content
-    $logMessage = "$dateTime"
-
-    # Checks if logs are enabled
-    if($testLogPath)
-    {
-        # Add content to log file
-        Add-content $logFile -value $logMessage
+        # Displays information
+        PrintMsg -msg $UTlang.LogsInProgress -msg2 "$logDir\created_log_$dateTime.log"
+        # Starts the creation of plots with logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
+        $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --tmpdir $tmpDir --farmerkey $farmerKey --poolkey $poolKey --count 1 | tee "$logDir\created_log_$dateTime.log"
+        # Return       
+        return $processCreatePlots
     }
     else
     {
-        # Create log repertorie if not exists
-        New-Item -Path $logsPath -ItemType Container
-        # Add content to log file
-        Add-content $logFile -value $logMessage
-    }
+        # Starts the creation of plots without logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
+        $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --tmpdir $tmpDir --farmerkey $farmerKey --poolkey $poolKey --count 1
+        # Return
+        return $processCreatePlots
 
-    # Displays information
-    PrintMsg -msg $UTlang.LogsInProgress -msg2 "$logFile"    
+    }
 }
