@@ -35,7 +35,7 @@ Function PrintMsg {
         [Parameter(Mandatory=$false)]  [bool]$bld = $true
     ) 
 
-    # Add back to line
+    # Add back to line on Top or on down
     if($blu){$btlu = "`n"}
     if($bld){$btld = "`n"}
 
@@ -82,8 +82,7 @@ Function SelectDisk {
 
     # Takes a break
     start-sleep -s $smallTime
-    
-    # 
+
     foreach ($_ in $finalDir)
     {
         # we query the selected hard drives
@@ -127,22 +126,29 @@ Function MovePlots {
         [bool]$logsMoved
     )
 
-    # Takes a break
-    start-sleep -s $smallTime
-
     # Starts the move window if the process does not exist
     $startMovePlots = new-object System.Diagnostics.ProcessStartInfo
     $startMovePlots.FileName = "$pshome\powershell.exe"
-    $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy $tmpDir $finalDir *.plot /mov; sleep $sleepTime}"
-
+    
     # Log creation if logs are enabled
     if($logsMoved)
     {
+        # Check if repertory exists
+        if (!(Test-Path -Path $logDirMoved)) 
+        {   
+            # Create repertory if not exists
+            New-Item -Path "$logDirMoved" -ItemType Container
+        }
+
         # Displays information
         PrintMsg -msg $UTlang.LogsInProgress -msg2 "$logDirMoved\moved_log_$dateTime.log"
 
-        # # Starts the creation of plots with logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
-        $processMovePlots = [Diagnostics.Process]::Start($startMovePlots) | tee "$logDirMoved\moved_log_$dateTime.log"
+        # Takes a break
+        start-sleep -s $smallTime
+
+        # Starts the creation of plots with logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
+        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy '$tmpDir' '$finalDir' *.plot /unilog:'$logDirMoved\moved_log_$dateTime.log' /tee /mov; sleep $sleepTime}"
+        $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
 
         # Takes a break
         start-sleep -s $smallTime
@@ -150,7 +156,11 @@ Function MovePlots {
     else
     {
         # Starts the creation of plots without logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
+        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy '$tmpDir' '$finalDir' *.plot /tee /mov; sleep $sleepTime}"
         $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
+
+        # Takes a break
+        start-sleep -s $smallTime
     }
 
     # Displays information
@@ -193,19 +203,28 @@ function CreatePlots {
     # Log creation if logs are enabled
     if($logs)
     {
+        # Check if repertory exists
+        if (!(Test-Path -Path $logDirMoved)) 
+        {   
+            # Create repertory if not exists
+            New-Item -Path "$logDirMoved" -ItemType Container
+        }
+
         # Displays information
         PrintMsg -msg $UTlang.LogsInProgress -msg2 "$logDir\created_log_$dateTime.log"
+
         # Starts the creation of plots with logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
         $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --tmpdir $tmpDir --farmerkey $farmerKey --poolkey $poolKey --count 1 | tee "$logDir\created_log_$dateTime.log"
-        # Return       
-        return $processCreatePlots
     }
     else
     {
         # Starts the creation of plots without logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
         $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --tmpdir $tmpDir --farmerkey $farmerKey --poolkey $poolKey --count 1
-        # Return
-        return $processCreatePlots
-
     }
+
+    # Takes a break
+    start-sleep -s $smallTime
+
+    # Return
+    return $processCreatePlots
 }

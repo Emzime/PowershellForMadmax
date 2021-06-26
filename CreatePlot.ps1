@@ -35,14 +35,7 @@ $midTime = 5
 $bigTime = 10
 
 # Set the date and time
-if(($PSCulture) -eq "fr-FR") 
-{ 
-    $dateTime = $((get-date).ToLocalTime()).ToString("dd-MM-yyyy_HH'h'mm'm'ss") 
-}
-else
-{ 
-    $dateTime = $((get-date).ToLocalTime()).ToString("yyyy-MM-dd_hh'h'mm'm'ss") 
-}
+if(($PSCulture) -eq "fr-FR"){ $dateTime = $((get-date).ToLocalTime()).ToString("dd-MM-yyyy_HH'h'mm'm'ss") }else{ $dateTime = $((get-date).ToLocalTime()).ToString("yyyy-MM-dd_hh'h'mm'm'ss") }
 
 # check if the creation process is in progress
 $chiaPlotProcess = (Get-Process -Name "chia_plot" -erroraction "silentlycontinue")
@@ -61,21 +54,17 @@ if(($chiaPlotProcess) -eq $null)
     {
         # check if the movePlots process is in progress
         $MovePlotProcess = (Get-Process -ID $movePlots -erroraction "silentlycontinue")
+        
+        # Displays error message
+        PrintMsg -msg $CPlang.MovingAlreadyLaunch -msg2 $movePlots
     }
-
-    # If the process is not running (A REVOIR POUR LE CHANGEMENT AUTOMATIQUE DE STOCKAGE)
-    if(($MovePlotProcess) -eq $null)
+    else
     {
         # Launch plot movement
         $movePlots = MovePlots -tmpdir $config["tmpDir"] -finaldir $finalDir -logs $config["logsMoved"] -logDir $config["logDirMoved"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -sleepTime $sleepTime -dateTime $dateTime
 
         # Displays the process ID
         PrintMsg -msg $CPlang.MovingProcessID -msg2 "$movePlots"
-    }
-    else
-    {
-        # Displays error message
-        PrintMsg -msg $CPlang.MovingAlreadyLaunch -msg2 $movePlots
     }
 
     # Takes a break
@@ -86,19 +75,6 @@ if(($chiaPlotProcess) -eq $null)
 
     # Displays the process ID
     PrintMsg -msg $CPlang.CreatePlotsID -msg2 $createPlots.ID
-
-    # On test si le fichier log existe
-    $testPath = Test-Path "$config['logDir']\created_log_$dateTime.log"
-
-    # si le fichier existe, on l'affiche
-    if($testPath)
-    {
-        Get-Content -Path "$config['logDir']\created_log_$dateTime.log"
-    }
-    else
-    {
-        echo $createPlots
-    }
 
     # Takes a break
     start-sleep -s $smallTime
