@@ -1,4 +1,4 @@
-﻿# @Example $config['tmpdir'] = valPath -path $config['tmpdir']
+﻿# @Example $config['tmpDir'] = valPath -path $config['tmpDir']
 Function ValPath {
     Param (
         [Parameter(Mandatory=$true)]  [String]$path,
@@ -46,25 +46,25 @@ Function PrintMsg {
 Function SelectDisk
 {
     Param (
-        [Object]$finaldir,
+        [Object]$finalDir,
         [int]$smallTime,
         [int]$midTime,
         [int]$bigTime
     )
     
     # Check if CopyPlots process is running
-    $ProcessCopyPlots = (Get-Process -NAME "CopyPlots" -Ea SilentlyContinue)
+    $processCopyPlots = (Get-Process -NAME "CopyPlots" -erroraction "silentlycontinue")
 
     # Defines space required
-    If (!($ProcessCopyPlots -eq $null)){$RequiredSpace = 204}else{$RequiredSpace = 102}
+    If (!($processCopyPlots -eq $null)){$requiredSpace = 204}else{$requiredSpace = 102}
 
     # Displays information about the space required
-    PrintMsg -msg "Note: the space requirement is $RequiredSpace Go" -blu $true
+    PrintMsg -msg "Note: the space requirement is $requiredSpace Go" -blu $true
 
     # Takes a break
     start-sleep -s $smallTime
     
-    foreach ($_ in $finaldir)
+    foreach ($_ in $finalDir)
     {
         # we query the selected hard drives
         $diskSpace = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='$($_):'" | Select-Object FreeSpace
@@ -73,7 +73,7 @@ Function SelectDisk
         $diskSpace = [int] [math]::Round($diskSpace.FreeSpace / 1073741824)
 
         # Check which disk is available
-        if ($diskSpace -ge $RequiredSpace)
+        if ($diskSpace -ge $requiredSpace)
         {    
             # Displays letter and available capacity
             PrintMsg -msg "Final disk used $($_):\ -> Free space remaining $diskSpace Go"
@@ -91,8 +91,8 @@ Function SelectDisk
 Function MovePlots
 {
     Param (
-        [string]$tmpdir,
-        [String]$finaldir,
+        [string]$tmpDir,
+        [String]$finalDir,
         [int]$sleepTime,
         [int]$smallTime,
         [int]$midTime,
@@ -100,9 +100,9 @@ Function MovePlots
     )
 
     # Starts the move window if the process does not exist
-    $StartMovePlots = new-object System.Diagnostics.ProcessStartInfo
-    $StartMovePlots.FileName = "$pshome\powershell.exe"
-    $StartMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle=`'MovePlots`'; while ('$true') {robocopy $tmpdir $finaldir *.plot /mov; sleep $sleepTime}"
+    $startMovePlots = new-object System.Diagnostics.ProcessStartInfo
+    $startMovePlots.FileName = "$pshome\powershell.exe"
+    $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy $tmpDir $finalDir *.plot /mov; sleep $sleepTime}"
 
     # Displays information
     PrintMsg -msg "MovePlots process in progress..."
@@ -111,10 +111,10 @@ Function MovePlots
     start-sleep -s $smallTime
 
     # Starts the process
-    $ProcessMovePlots = [Diagnostics.Process]::Start($StartMovePlots)
+    $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
 
     # Get process id
-    $movePlotsID = $ProcessMovePlots.ID
+    $movePlotsID = $processMovePlots.ID
     return $movePlotsID
 }
 
@@ -129,14 +129,14 @@ function CreatePlots
         [Int]$buckets3,
         [Int]$smallTime,
         [String]$logDir,
-        [string]$tmpdir,
-        [String]$poolkey,
-        [string]$tmpdir2,
-        [String]$finaldir,
-        [String]$farmerkey,
+        [string]$tmpDir,
+        [String]$poolKey,
+        [string]$tmpDir2,
+        [String]$finalDir,
+        [String]$farmerKey,
         [String]$chiaPlotterLoc,
         [bool]$logs,
-        [bool]$tmptoggle
+        [bool]$tmpToggle
     )
     
     # Displays information
@@ -145,43 +145,50 @@ function CreatePlots
     # Takes a break
     start-sleep -s $smallTime
 
+    # Logs
+    if($logs)
+    {
+        $writeLog = WriteLog
+        $logOn = "| tee $writeLog"
+    }
+    else {
+        $logOn = ""
+    }
+
     # Starts the creation of plots 
-    $creating = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --tmpdir $tmpdir --farmerkey $farmerkey --poolkey $poolkey --count 1
+    $creating = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --tmpdir $tmpDir --farmerkey $farmerKey --poolkey $poolKey --count 1 $logOn
         
     return $creating
 }
 
-
 # Logs (A REVOIR NE FONCTIONNE PAS)
-Function Logs
+Function WriteLog
 {
     # Launch in admin mode if logs are enabled
-    if($config['logs'])
+    if($config["logs"])
     {
-        if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))  
-        {  
-          $arguments = "& '" +$myinvocation.mycommand.definition + "'"
-          Start-Process powershell -Verb runAs -ArgumentList $arguments
-          Break
+        # Get datetime
+        if($PSCulture -eq "fr_FR") { $dateTime = $((get-date).ToLocalTime()).ToString("dd-MM-yyyy HH'h'mm'm'ss") }else{ $dateTime = $((get-date).ToLocalTime()).ToString("yyyy-MM-dd hh'h'mm'm'ss") }
+        # Log directorie        
+        $logsPath = $config["logDir"]
+        # Check if log directorie is ok
+        $testLogPath = Test-Path "$logsPath"
+        # Log name
+        $logFile = "$logsPath\Plot_$dateTime.log"
+        # Log content
+        $logMessage = "$dateTime"
+        # Checks if logs are enabled
+        if($testLogPath)
+        {
+            # Add content to log file
+            Add-content $logFile -value $logMessage
         }
-
-        #  Log file time stamp:
-        $logTime = Get-Date -Format "MM-dd-yyyy_hh-mm-ss"
-
-        # Log directory
-        $logName = $config['logDir']
-        $logName = "$logName\log-$logTime.log"
-
-        # Start logging
-        start-transcript -path "$logDir"
-    }
-
-
-
-
-    # Stop logs if activated
-    if($config['logs'])
-    {
-        Stop-Transcript
+        else
+        {
+            # Create log repertorie if not exists
+            New-Item -Path $logsPath -ItemType Container
+            # Add content to log file
+            Add-content $logFile -value $logMessage
+        }
     }
 }

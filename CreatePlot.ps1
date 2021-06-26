@@ -1,14 +1,17 @@
 # Load PSYaml module for read yaml file
-$ScriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
+$scriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
 
 # Search for the name of the script
-$ScriptName = $MyInvocation.MyCommand.Name
+$scriptName = $MyInvocation.MyCommand.Name
 
 # File import
-Import-Module $ScriptDir\PSYaml
+Import-Module $scriptDir\PSYaml
+
+# Intenationalization import
+$lang = Import-LocalizedData -BaseDirectory Lang
 
 # Importing functions
-."$ScriptDir\Functions\Utility.ps1"
+."$scriptDir\Functions\Utility.ps1"
 
 # Get config.yaml file
 [string[]]$fileContent = Get-Content "config.yaml"
@@ -19,10 +22,10 @@ foreach ($line in $fileContent) { $content = $content + "`n" + $line }
 $config = ConvertFrom-YAML $content
 
 # Define valpath ( -isDir $true si fichier)
-$config['logDir'] = valPath -path $config['logDir']
-$config['tmpdir'] = valPath -path $config['tmpdir']
-$config['tmpdir2'] = valPath -path $config['tmpdir2']
-$config['chiaPlotterLoc'] = valPath -path $config['chiaPlotterLoc']
+$config["logDir"]   = ValPath -path $config["logDir"]
+$config["tmpDir"]   = ValPath -path $config["tmpDir"]
+$config["tmpDir2"]  = ValPath -path $config["tmpDir2"]
+$config["chiaPlotterLoc"] = ValPath -path $config["chiaPlotterLoc"]
 
 # Define break time
 $sleepTime = 300
@@ -31,13 +34,13 @@ $midTime = 5
 $bigTime = 10
 
 # check if the creation process is in progress
-$ChiaPlotProcess = (Get-Process -Name "chia_plot" -Ea SilentlyContinue)
+$chiaPlotProcess = (Get-Process -Name "chia_plot" -erroraction "silentlycontinue")
 
 # If the process is not running
-if(($ChiaPlotProcess) -eq $null)
+if(($chiaPlotProcess) -eq $null)
 {
     # Verification and allocation of disk space
-    $finaldir = SelectDisk -finaldir $config['finaldir'] -smallTime $smallTime -midTime $midTime -bigTime $bigTime
+    $finalDir = SelectDisk -finaldir $config["finalDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime
 
     # Takes a break
     start-sleep -s $smallTime 
@@ -46,14 +49,14 @@ if(($ChiaPlotProcess) -eq $null)
     if(!($movePlots -eq $null))
     {
         # check if the movePlots process is in progress
-        $MovePlotProcess = (Get-Process -ID $movePlots -erroraction 'silentlycontinue')
+        $MovePlotProcess = (Get-Process -ID $movePlots -erroraction "silentlycontinue")
     }
 
     # If the process is not running (A REVOIR POUR LE CHANGEMENT AUTOMATIQUE DE STOCKAGE)
     if(($MovePlotProcess) -eq $null)
     {
         # Launch plot movement
-        $movePlots = MovePlots -tmpdir $config['tmpdir'] -finaldir $finaldir -smallTime $smallTime -midTime $midTime -bigTime $bigTime -sleepTime $sleepTime
+        $movePlots = MovePlots -tmpdir $config["tmpDir"] -finaldir $finalDir -smallTime $smallTime -midTime $midTime -bigTime $bigTime -sleepTime $sleepTime
 
         # Displays the process ID
         PrintMsg -msg "Process ID for moving plot is $movePlots"
@@ -68,22 +71,16 @@ if(($ChiaPlotProcess) -eq $null)
     start-sleep -s $smallTime
 
     # Start script
-    $CreatePlots = CreatePlots -threads $config['threads'] -buckets $config['buckets'] -buckets3 $config['buckets3'] -farmerkey $config['farmerkey'] -poolkey $config['poolkey'] -tmpdir $config['tmpdir'] -tmpdir2 $config['tmpdir2'] -finaldir $finaldir -tmptoggle $config['tmptoggle'] -chiaPlotterLoc $config['chiaPlotterLoc'] -logs $config['logs'] -logDir $config['logDir'] -smallTime $smallTime -midTime $midTime -bigTime $bigTime
+    $createPlots = CreatePlots -threads $config["threads"] -buckets $config["buckets"] -buckets3 $config["buckets3"] -farmerkey $config["farmerkey"] -poolkey $config["poolKey"] -tmpdir $config["tmpDir"] -tmpdir2 $config["tmpDir2"] -finaldir $finalDir -tmptoggle $config["tmpToggle"] -chiaPlotterLoc $config["chiaPlotterLoc"] -logs $config["logs"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime
  
     # Affichage des logs de création (A REVOIR NE FONCTIONNE PAS)
-    #Write-Host @CreatePlots
+    Write-Host @createPlots
 
     # Displays the process ID
-    PrintMsg -msg "Process ID for creating plot is" $CreatePlots.ID
+    PrintMsg -msg "Process ID for creating plot is "$createPlots.ID
 
     # Takes a break
     start-sleep -s $smallTime
-
-    # Stop logs if activated
-    if($config['logs'])
-    {
-        Stop-Transcript
-    }
 }
 else
 {
@@ -95,3 +92,4 @@ else
 
     exit
 }
+pause

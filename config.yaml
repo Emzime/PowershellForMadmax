@@ -1,14 +1,14 @@
 threads: 6
 buckets: 128
 buckets3: 128
-farmerkey: YOUR FARMER KEY
-poolkey: YOUR POOL KEY
-tmpdir: YOUR TEMP FOLDER
-tmpdir2: YOUR TEMPORARY DIRECTORY 2 RAMDISK
-finaldir:
+farmerKey: YOUR FARMER KEY
+poolKey: YOUR POOL KEY
+tmpDir: YOUR TEMP FOLDER
+tmpDir2: YOUR TEMPORARY DIRECTORY 2 RAMDISK
+finalDir:
 - HDD 1 (just Letter)
 - HDD 2 (just Letter)
-tmptoggle: false
+tmpToggle: false
 chiaPlotterLoc: YOUR MADMAX FOLDER
 logs: false
 logDir: YOUR LOG FOLDER
