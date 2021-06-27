@@ -1,7 +1,7 @@
 ﻿ConvertFrom-StringData @"
-    MovingProcessID = Process ID for moving plot is: 
-    MovingAlreadyLaunch = The displacement process is already underway and its id is: 
-    CreatePlotsID = Process ID for creating plot is: 
-    CreateAlreadyLaunch = Plot creation is already in progress, close this window in 
     Seconds = seconds
+    ResetVariables = Variables tmpDir and finalDir have been successfully reset
+    ResetVariablesInProgress = Reset of current variables...
+    ProcessMoveClosed = Successfully closed plot transfer process
+    ProcessMoveClosing = Closing the plot transfer process (id:
 "@

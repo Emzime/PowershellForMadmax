@@ -1,7 +1,7 @@
 ﻿ConvertFrom-StringData @"
-    MovingProcessID = L'id du processus pour le déplacement des parcelles est: 
-    MovingAlreadyLaunch = Le processus de déplacement est déjà en cours et son id est: 
-    CreatePlotsID = L'id du processus de création de plot est: 
-    CreateAlreadyLaunch = La création de plot est déjà en cours, cette fenêtre se fermera dans 
     Seconds = secondes
+    ResetVariables = Variables tmpDir et finalDir ont été réinitialisées avec succès
+    ResetVariablesInProgress = Réinitialisation des variables en cours...
+    ProcessMoveClosed = Processus de transfert de plot fermé avec succès
+    ProcessMoveClosing = Clôture du processus de transfert de parcelles (id:
 "@
