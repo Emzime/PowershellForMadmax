@@ -83,9 +83,10 @@ Function SelectDisk {
     # Takes a break
     start-sleep -s $smallTime
 
+    # We make a loop to find the free space 
     foreach ($_ in $finalDir)
     {
-        # we query the selected hard drives
+        # We query the selected hard drives
         $diskSpace = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='$($_):'" | Select-Object FreeSpace
 
         # Defines space in Gio
