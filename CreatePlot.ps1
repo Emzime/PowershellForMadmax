@@ -1,3 +1,7 @@
+# Make powershell background to darkblue
+$Host.UI.RawUI.BackgroundColor = "Black"
+# Make powershell text to 
+$Host.UI.RawUI.ForegroundColor = "Green"
 # Load PSYaml module for read yaml file
 $scriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
 
@@ -32,6 +36,9 @@ $sleepTime = 300
 $smallTime = 1
 $midTime = 3
 $bigTime = 5
+
+# Clear powershell window
+clear-host
 
 # Get the date and time
 if(($PSCulture) -eq "fr-FR"){ $dateTime = $((get-date).ToLocalTime()).ToString("dd-MM-yyyy_HH'h'mm'm'ss") }else{ $dateTime = $((get-date).ToLocalTime()).ToString("yyyy-MM-dd_hh'h'mm'm'ss") }

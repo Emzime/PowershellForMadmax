@@ -33,7 +33,7 @@ Function PrintMsg {
         [Parameter(Mandatory=$false)]  [String]$textColor = "Green",
         [Parameter(Mandatory=$false)]  [bool]$blu = $false,
         [Parameter(Mandatory=$false)]  [bool]$bld = $true
-    ) 
+    )
 
     # Add back to line on Top or on down
     if($blu){$btlu = "`n"}
