@@ -17,6 +17,8 @@ Function ValPath {
         $path = "$($path)\"
     }
 
+    # $path = $path -replace "\\", "\"
+
     return $path
 }
 
@@ -51,7 +53,7 @@ Function PrintMsg {
     else
     {
         $charCount = ($msg.Length + 2) + ($msg2.Length + 1) + ($msg3.Length + 1)
-    } 
+    }
 
     # Count number of #
     for ($i = 1 ; $i -le $charCount ; $i++){$sharp += "#"}
@@ -66,16 +68,14 @@ Function PrintMsg {
 Function SelectDisk {
     Param (
         [Object]$finalDir,
+        [int]$requiredSpace,
         [int]$smallTime,
         [int]$midTime,
         [int]$bigTime
     )
-    
-    # Check if CopyPlots process is running
-    $processCopyPlots = (Get-Process -NAME "CopyPlots" -erroraction "silentlycontinue")
 
-    # Defines space required (A REVOIR POUR LE TROUVER AVEC L ID DU PROCESS)
-    If (!($processCopyPlots -eq $null)){$requiredSpace = 204}else{$requiredSpace = 102}
+    # Set the default space requirement
+    if(!($requiredSpace)){$requiredSpace = 102}
 
     # Display information about the space required
     PrintMsg -msg $UTlang.SpaceRequire -msg2 $requiredSpace -msg3 $UTlang.Gigaoctet -blu $true
@@ -83,7 +83,7 @@ Function SelectDisk {
     # Takes a break
     start-sleep -s $smallTime
 
-    # We make a loop to find the free space 
+    # We make a loop to find the free space
     foreach ($_ in $finalDir)
     {
         # We query the selected hard drives
@@ -134,38 +134,25 @@ Function MovePlots {
     # Log creation if logs are enabled
     if($logsMoved)
     {
-        # Check if repertory exists
-        if (!(Test-Path -Path "$logDir")) 
-        {   
-            # Create repertory if not exists
-            New-Item -Path "$logDir" -ItemType Container
-        }
-
-        # Display information
-        PrintMsg -msg $UTlang.LogsInProgress -msg2 "$logDir\moved_log_$dateTime.log"
+        # Starts the creation of plots with logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
+        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy '$tmpDir' '$finalDir' *.plot /unilog:'$logDir\moved_log_$dateTime.log' /tee /mov; sleep $sleepTime}"
+        $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
 
         # Takes a break
         start-sleep -s $smallTime
 
-        # Starts the creation of plots with logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
-        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy '$tmpDir' '$finalDir' *.plot /unilog:'$logDir\moved_log_$dateTime.log' /tee /mov; sleep $sleepTime}"
-        $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
+        # Display information
+        PrintMsg -msg $UTlang.LogsInProgress -msg2 "$logDir\moved_log_$dateTime.log"
     }
     else
     {
         # Starts the creation of plots without logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
-        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy '$tmpDir' '$finalDir' *.plot /tee /mov; sleep $sleepTime}"
+        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy '$tmpDir' '$finalDir' *.plot /mov; sleep $sleepTime}"
         $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
     }
 
-    # Takes a break
-    start-sleep -s $smallTime
-
     # Display information
     PrintMsg -msg $UTlang.MovePlotInProgress -msg2 $UTlang.ProcessID  -msg3 $processMovePlots.ID
-
-    # Takes a break
-    start-sleep -s $smallTime
 
     # Get process id
     return $processMovePlots.ID
@@ -195,13 +182,6 @@ function CreatePlots {
     # Log creation if logs are enabled
     if($logs)
     {
-        # Check if repertory exists
-        if (!(Test-Path -Path "$logDir")) 
-        {   
-            # Create repertory if not exists
-            New-Item -Path "$logDir" -ItemType Container
-        }
-
         # Display information
         PrintMsg -msg $UTlang.LogsInProgress -msg2 "$logDir\created_log_$dateTime.log"
 
@@ -210,13 +190,11 @@ function CreatePlots {
 
         # Starts the creation of plots with logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
         $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --tmpdir $tmpDir --farmerkey $farmerKey --poolkey $poolKey --count 1 | tee "$logDir\created_log_$dateTime.log" | Out-Default
-        return $processCreatePlots.ID
     }
     else
     {
         # Starts the creation of plots without logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
         $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --tmpdir $tmpDir --farmerkey $farmerKey --poolkey $poolKey --count 1 | Out-Default
-        return $processCreatePlots.ID
     }
 
     # Takes a break
@@ -224,6 +202,12 @@ function CreatePlots {
 
     # Display information
     PrintMsg -msg $UTlang.CreatePlotInProgress -msg2 $UTlang.ProcessID  -msg3 $processCreatePlots.ID
+
+    # Takes a break
+    start-sleep -s $smallTime
+
+    # Get process id
+    return $processCreatePlots.ID
 
     # Takes a break
     start-sleep -s $smallTime
