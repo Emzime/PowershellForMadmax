@@ -31,8 +31,8 @@ Function PrintMsg {
         [Parameter(Mandatory=$false)]  [String]$msg2,
         [Parameter(Mandatory=$false)]  [String]$msg3,
         [Parameter(Mandatory=$false)]  [String]$backColor = "black",
-        [Parameter(Mandatory=$false)]  [String]$sharpColor = "Blue",
-        [Parameter(Mandatory=$false)]  [String]$textColor = "Green",
+        [Parameter(Mandatory=$false)]  [String]$sharpColor = "Green",
+        [Parameter(Mandatory=$false)]  [String]$textColor = "Yellow",
         [Parameter(Mandatory=$false)]  [bool]$blu = $false,
         [Parameter(Mandatory=$false)]  [bool]$bld = $true
     )
@@ -46,13 +46,13 @@ Function PrintMsg {
     {
         $charCount = ($msg.Length + 2) + ($msg2.Length + 1)
     }
-    elseif($msg1 -AND $msg2 -AND $msg3)
+    elseif($msg2 -AND $msg3)
     {
         $charCount = ($msg.Length + 2) + ($msg2.Length + 1) + ($msg3.Length + 1)
     }
     else
     {
-        $charCount = ($msg.Length + 2) + ($msg2.Length + 1) + ($msg3.Length + 1)
+        $charCount = ($msg.Length + 2) + ($msg2.Length + 1) + ($msg3.Length)
     }
 
     # Count number of #
@@ -179,6 +179,16 @@ function CreatePlots {
         [bool]$tmpToggle
     )
 
+    # Options
+    # Set buckets3 if active
+    if($buckets3){$buckets3 = $buckets3}else{$buckets3 = ""}
+
+    # Set tmpDir2 if active
+    if($tmpDir2){$tmpDir2 = $tmpDir2}else{$tmpDir2 = $tmpDir}
+
+    # Set tmptoggle if active and tmpDir2 ative
+    if(($tmpDir2) -AND (!($tmpDir2 -eq $tmpDir)) -AND ($tmpToggle -eq $true)){$tmpToggle = $True}else{$tmpToggle = $false}
+
     # Log creation if logs are enabled
     if($logs)
     {
@@ -189,12 +199,12 @@ function CreatePlots {
         start-sleep -s $smallTime
 
         # Starts the creation of plots with logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
-        $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --tmpdir $tmpDir --farmerkey $farmerKey --poolkey $poolKey --count 1 | tee "$logDir\created_log_$dateTime.log" | Out-Default
+        $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --buckets3 $buckets3 --tmpdir $tmpDir --tmpdir2 $tmpDir2 --tmptoggle $tmpToggle --farmerkey $farmerKey --poolkey $poolKey --count 1 | tee "$logDir\created_log_$dateTime.log" | Out-Default
     }
     else
     {
         # Starts the creation of plots without logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
-        $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --tmpdir $tmpDir --farmerkey $farmerKey --poolkey $poolKey --count 1 | Out-Default
+        $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --buckets3 $buckets3 --tmpdir $tmpDir --tmpdir2 $tmpDir2 --tmptoggle $tmpToggle --farmerkey $farmerKey --poolkey $poolKey --count 1 | Out-Default
     }
 
     # Takes a break
@@ -211,4 +221,134 @@ function CreatePlots {
 
     # Takes a break
     start-sleep -s $smallTime
+}
+
+Function CheckPath
+{
+    [CmdletBinding()]
+    Param (
+        [String]$logDir,
+        [string]$tmpDir,
+        [string]$tmpDir2,
+        [String]$chiaPlotterLoc
+    )
+
+    # Set tmpDir2 if active
+    if($tmpDir2){$tmpDir2 = $tmpDir2}else{$tmpDir2 = $tmpDir}
+
+    # Check if logDir path exists and apply ValPath
+    if(!($logDir))
+    {
+        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> logDir"
+        pause
+    }
+    elseif (!(Test-Path -Path "$logDir"))
+    {
+        $newItem = New-Item -Path "$logDir" -ItemType Container
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.TempDirCreated -msg2 "-> logDir"     
+        # Takes a break
+        start-sleep -s $smallTime
+        # Apply ValPath
+        $config["logDir"] = ValPath -path $logDir
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.ValPathApply -msg2 "logDir"
+    }
+    else 
+    {
+        # Apply ValPath
+        $results = ValPath -path $logDir
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.ValPathApply -msg2 "logDir"
+    }
+     
+    # Takes a break
+    start-sleep -s $smallTime
+
+    # Check if tmpDir path exists and apply ValPath
+    if(!($tmpDir))
+    {
+        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> tmpDir"
+        pause
+    }
+    elseif (!(Test-Path -Path "$tmpDir"))
+    {
+        $newItem = New-Item -Path "$tmpDir" -ItemType Container
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.TempDirCreated -msg2 "-> tmpDir"     
+        # Takes a break
+        start-sleep -s $smallTime
+        # Apply ValPath
+        $config["tmpDir"] = ValPath -path $tmpDir
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.ValPathApply -msg2 "tmpDir"
+    }
+    else 
+    {
+        # Apply ValPath
+        $config["tmpDir"] = ValPath -path $tmpDir
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.ValPathApply -msg2 "tmpDir"
+    }
+     
+    # Takes a break
+    start-sleep -s $smallTime
+
+    # Check if tmpDir2 path exists and apply ValPath
+    if(!($tmpDir2))
+    {
+        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> tmpDir2"
+        pause
+    }
+    elseif (!(Test-Path -Path "$tmpDir2"))
+    {
+        $newItem = New-Item -Path "$tmpDir2" -ItemType Container
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.TempDirCreated -msg2 "-> tmpDir2"     
+        # Takes a break
+        start-sleep -s $smallTime
+        # Apply ValPath
+        $config["tmpDir2"] = ValPath -path $tmpDir2
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.ValPathApply -msg2 "tmpDir2"
+    }
+    else 
+    {
+        # Apply ValPath
+        $config["tmpDir2"] = ValPath -path $tmpDir2
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.ValPathApply -msg2 "tmpDir2"
+    }
+     
+    # Takes a break
+    start-sleep -s $smallTime
+
+    # Check if chiaPlotterLoc path exists and apply ValPath
+    if(!($chiaPlotterLoc))
+    {
+        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> chiaPlotterLoc"
+        pause
+    }
+    elseif (!(Test-Path -Path "$chiaPlotterLoc"))
+    {
+        $newItem = New-Item -Path "$chiaPlotterLoc" -ItemType Container
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.TempDirCreated -msg2 "-> chiaPlotterLoc"     
+        # Takes a break
+        start-sleep -s $smallTime
+        # Apply ValPath
+        $config["chiaPlotterLoc"] = ValPath -path $chiaPlotterLoc
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.ValPathApply -msg2 "chiaPlotterLoc"
+    }
+    else 
+    {
+        # Apply ValPath
+        $config["chiaPlotterLoc"] = ValPath -path $chiaPlotterLoc
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.ValPathApply -msg2 "chiaPlotterLoc"
+    }
+
+    # Takes a break
+    start-sleep -s $midTime
 }

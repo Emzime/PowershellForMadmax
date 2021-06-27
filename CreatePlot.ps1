@@ -2,7 +2,10 @@
 $Host.UI.RawUI.BackgroundColor = "Black"
 
 # Make powershell text to 
-$Host.UI.RawUI.ForegroundColor = "Green"
+$Host.UI.RawUI.ForegroundColor = "Yellow"
+
+# Make name to window
+$Host.UI.RawUI.WindowTitle='PowerShell For madMAx'
 
 # Load PSYaml module for read yaml file
 $scriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
@@ -27,12 +30,6 @@ foreach ($line in $fileContent) { $content = $content + "`n" + $line }
 # Convert config.yaml
 $config = ConvertFrom-YAML $content
 
-# Define valpath ( -isDir $true si fichier)
-$config["logDir"]   = ValPath -path $config["logDir"]
-$config["tmpDir"]   = ValPath -path $config["tmpDir"]
-$config["tmpDir2"]  = ValPath -path $config["tmpDir2"]
-$config["chiaPlotterLoc"] = ValPath -path $config["chiaPlotterLoc"]
-
 # Define break time
 $sleepTime = 300
 $smallTime = 1
@@ -42,13 +39,11 @@ $bigTime = 5
 # Clear window
 Clear-Host
 
-# Create the log directory if it does not exist
-if (!(Test-Path -Path $config["logDir"]))
-{
-    New-Item -Path $config["logDir"] -ItemType Container
-    # Displays creation of the directory
-    PrintMsg -msg $CPlang.FinaleDiskUsed -msg2 "$($_):\"
-}
+# Apply ValPath
+CheckPath -logDir $config["logDir"] -tmpDir $config["tmpDir"] -tmpDir2 $config["tmpDir2"] -chiaPlotterLoc $config["chiaPlotterLoc"]
+
+# Clear window
+Clear-Host
 
 # Get date and time conversion
 if(($PSCulture) -eq "fr-FR")
@@ -62,9 +57,6 @@ else
 
 # Verification and allocation of disk space
 $finalDir = SelectDisk -finaldir $config["finalDir"] -requiredSpace $requiredSpace -smallTime $smallTime -midTime $midTime -bigTime $bigTime
-
-# Takes a break
-start-sleep -s $smallTime
 
 # Start script
 $createPlots = CreatePlots -threads $config["threads"] -buckets $config["buckets"] -buckets3 $config["buckets3"] -farmerkey $config["farmerkey"] -poolkey $config["poolKey"] -tmpdir $config["tmpDir"] -tmpdir2 $config["tmpDir2"] -finaldir $finalDir -tmptoggle $config["tmpToggle"] -chiaPlotterLoc $config["chiaPlotterLoc"] -logs $config["logs"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -dateTime $dateTime
@@ -171,6 +163,3 @@ if((Get-Process -NAME "chia_plot" -erroraction "silentlycontinue") -eq $null)
     # Relaunch the creation of plots
     ."$scriptDir\$scriptName"
 }
-
-# Debug
-pause
