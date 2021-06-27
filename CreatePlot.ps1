@@ -1,10 +1,26 @@
-#######################################
-#   IMPORTATION DE LA CONFIGURATION   #
-#######################################
+# Make powershell background to darkblue
+$Host.UI.RawUI.BackgroundColor = "Black"
+
+# Make powershell text to 
+$Host.UI.RawUI.ForegroundColor = "Yellow"
+
+# Make name to window
+$Host.UI.RawUI.WindowTitle='PowerShell For madMAx'
 
 # Load PSYaml module for read yaml file
-$ScriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
-Import-Module $ScriptDir\PSYaml
+$scriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
+
+# Search for the name of the script
+$scriptName = $MyInvocation.MyCommand.Name
+
+# File import
+Import-Module $scriptDir\PSYaml
+
+# Intenationalization import
+$CPlang = Import-LocalizedData -BaseDirectory Lang
+
+# Importing functions
+."$scriptDir\Functions\Utility.ps1"
 
 # Get config.yaml file
 [string[]]$fileContent = Get-Content "config.yaml"
@@ -14,186 +30,136 @@ foreach ($line in $fileContent) { $content = $content + "`n" + $line }
 # Convert config.yaml
 $config = ConvertFrom-YAML $content
 
-# Launch in admin mode if logs are enabled
-if($config['logs'])
-{
-    if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))  
-    {  
-      $arguments = "& '" +$myinvocation.mycommand.definition + "'"
-      Start-Process powershell -Verb runAs -ArgumentList $arguments
-      Break
-    }
-
-    #  Log file time stamp:
-    $logTime = Get-Date -Format "MM-dd-yyyy_hh-mm-ss"
-
-    # Log directory
-    $logDir = .$config['logDir']"\log-$logTime.log"
-
-    # Start logging
-    start-transcript -path "$logDir"
-}
-
-# Search for the name of the script
-$ScriptName = $MyInvocation.MyCommand.Name
-
-# Short break
+# Define break time
+$sleepTime = 300
 $smallTime = 1
-
-# Big break
+$midTime = 3
 $bigTime = 5
 
-# Minimum space required (for 1 plot)
-$PlotSpace = 102
+# Clear window
+Clear-Host
 
-###############################################
-#  Verification and allocation of disk space  #
-###############################################
+# Apply ValPath
+CheckPath -logDir $config["logDir"] -tmpDir $config["tmpDir"] -tmpDir2 $config["tmpDir2"] -chiaPlotterLoc $config["chiaPlotterLoc"]
 
-# We recalculate the required space (If CopyPlot is in progress, the script reserves the double of the required space, the time of the copy)
-$ProcessCopyPlots = (Get-Process -NAME "CopyPlots" -Ea SilentlyContinue)
+# Clear window
+Clear-Host
 
-If (!($ProcessCopyPlots -eq $null))
+# Get date and time conversion
+if(($PSCulture) -eq "fr-FR")
 {
-    $QuerySpace = ($PlotSpace * 2)
+    $dateTime = $((get-date).ToLocalTime()).ToString("dd-MM-yyyy_HH'h'mm'm'ss")
 }
 else
 {
-    $QuerySpace = $PlotSpace
+    $dateTime = $((get-date).ToLocalTime()).ToString("yyyy-MM-dd_hh'h'mm'm'ss")
 }
 
-foreach ($_ in $config['finaldir']) 
+# Verification and allocation of disk space
+$finalDir = SelectDisk -finaldir $config["finalDir"] -requiredSpace $requiredSpace -smallTime $smallTime -midTime $midTime -bigTime $bigTime
+
+# Start script
+$createPlots = CreatePlots -threads $config["threads"] -buckets $config["buckets"] -buckets3 $config["buckets3"] -farmerkey $config["farmerkey"] -poolkey $config["poolKey"] -tmpdir $config["tmpDir"] -tmpdir2 $config["tmpDir2"] -finaldir $finalDir -tmptoggle $config["tmpToggle"] -chiaPlotterLoc $config["chiaPlotterLoc"] -logs $config["logs"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -dateTime $dateTime
+
+# Takes a break
+start-sleep -s $midTime
+
+# Check if chia_plot process is running
+if((Get-Process -NAME "chia_plot" -erroraction "silentlycontinue") -eq $null)
 {
-    # we query the selected hard drives
-    $diskSpace = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='$($_):'" | Select-Object FreeSpace
+    # Define resetting variables
+    $resetTempDir   = $config["tmpDir"]
+    $resetFinalDir  = $config["finalDir"]
 
-    # Defines space in Gio
-    $freeSpace = [int] [math]::Round($diskSpace.FreeSpace / 1073741824)
-
-    # Check which disk is available
-    if ($freeSpace -ge $QuerySpace)
+    # if the process movePlots has an iD, we retrieve it
+    If (!(Get-Process -Name "Robocopy" -ErrorAction SilentlyContinue))
     {
-        # Recovers the letter of the hard disk
-        $copyDisk = "$($_):\"
-
-        # Assigns the available capacity
-        $freeDisk = $freeSpace
-        
-        # Stop if space available
-        break
-    }           
-}
-        
-#################################################
-#  Displays information about the space required  #
-#################################################
-Write-Host ("`n#######################################################################") -ForegroundColor Green
-Write-Host ("Note: the space requirement is $QuerySpace Go (see: note in the script)")
-Write-Host ("#######################################################################`n") -ForegroundColor Green
-
-# Pausing
-start-sleep -s $smallTime
-    
-#######################################
-#  Displays the final directory used  #
-#######################################
-Write-Host ("#########################################") -ForegroundColor Green
-Write-Host ("Temporary disk used -> ") $config['tmpdir']
-Write-Host ("#########################################`n") -ForegroundColor Green
-
-# Pausing
-start-sleep -s $smallTime
-
-######################################
-#     Displays available capacity    #
-######################################
-Write-Host ("#####################################################") -ForegroundColor Green
-Write-Host ("Final disk used -> $copyDisk -> Free space -> $freeDisk Go")
-Write-Host ("#####################################################`n") -ForegroundColor Green
-
-# Pausing
-start-sleep -s $smallTime
-
-###############################
-#   Creation launch message   #
-###############################
-Write-Host ("###################################") -ForegroundColor Green
-Write-Host ("Launching the plot creation process")
-Write-Host ("###################################`n") -ForegroundColor Green
-
-# Pausing
-start-sleep -s $smallTime
-
-#########################################
-#  Launching the plot creation process  #
-#########################################
-$chiaPlotterLoc = $config['chiaPlotterLoc'] # LIGNE A REVOIR
-.$chiaPlotterLoc\chia_plot.exe --threads $config['threads'] --buckets $config['buckets'] --tmpdir $config['tmpdir'] --farmerkey $config['farmerkey'] --poolkey $config['poolkey'] --count 1
-
-# Pausing
-start-sleep -s $bigTime
-
-############################################################
-#  Restarts the script if the process is no longer active  #
-############################################################
-
-# We are looking for the creative process
-$ChiaPlot = (Get-Process -Name "chia_plot" -Ea SilentlyContinue)
-
-# Pausing
-start-sleep -s $smallTime
-
-# Checks that the chia_plot process is not running
-If (($ChiaPlot) -eq $Null)
-{        
-    # Starts the move window if the process does not exist
-    $StartCopyPlots = new-object System.Diagnostics.ProcessStartInfo
-    $StartCopyPlots.FileName = "$pshome\powershell.exe"
-    $StartCopyPlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle=`'CopyPlots`'; while ('$true') {robocopy $config['tmpdir'] $copyDisk *.plot /mov; sleep 300}"
-
-    # Checks the existence of the process
-    If (($ProcessCopyPlots -eq $null))
-    {
-        # Starts the process
-        $StartCopyProcess = [Diagnostics.Process]::Start($StartCopyPlots)
-    
-        # Informative message
-        Write-Host ("#######################################") -ForegroundColor Green
-        Write-Host ("CopyPlots process successfully launched")
-        Write-Host ("#######################################`n") -ForegroundColor Green
+        # Launch plot movement
+        $movePlots = MovePlots -tmpdir $config["tmpDir"] -finaldir $finalDir -logs $config["logsMoved"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -sleepTime $sleepTime -dateTime $dateTime
     }
-    else
-    {   
-        # Informative message
-        Write-Host ("#####################################") -ForegroundColor Green
-        Write-Host ("CopyPlots process already in progress")
-        Write-Host ("#####################################`n") -ForegroundColor Green
+    else 
+    {
+        # If the final disk is different from the new one, the transfer window is closed and another one is opened
+        if(!($finalDir -eq $resetFinalDir))
+        {
+            # Displays the process ID if it is found
+            if($movePlots)
+            {
+                # Display information
+                PrintMsg -msg $CPlang.ProcessMoveClosing -msg2  $movePlots -msg3 ")"
+                # Takes a break
+                start-sleep -s $smallTime
+                # Stopping the moving process
+                Stop-Process -ID $movePlots
+                # Takes a break
+                start-sleep -s $smallTime
+                # Display information
+                PrintMsg -msg $CPlang.ProcessMoveClosed
+            }
+            else 
+            {
+                PrintMsg -msg $CPlang.ProcessMoveClosedImpossible -textColor "Red" -backColor "Black" -sharpColor "Black"
+                PrintMsg -msg $CPlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Black"
+                $input = Read-Host
+            }
+
+            # Takes a break
+            start-sleep -s $smallTime
+            # Display information
+            PrintMsg -msg $CPlang.ProcessMoveRelaunch
+            # Takes a break
+            start-sleep -s $smallTime
+            # Launch plot movement
+            $movePlots = MovePlots -tmpdir $config["tmpDir"] -finaldir $finalDir -logs $config["logsMoved"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -sleepTime $sleepTime -dateTime $dateTime
+        }
+        else 
+        {
+            # Displays the process ID if it is found
+            if($movePlots)
+            {
+                PrintMsg -msg $CPlang.ProcessMoveAlreadyLaunch -msg2 $CPlang.ProcessID  -msg3 $movePlots
+            }
+            else 
+            {
+                PrintMsg -msg $CPlang.ProcessMoveAlreadyLaunch
+            }
+        }
     }
 
-    # Pausing
+    # Takes a break
     start-sleep -s $smallTime
 
-    # Informative message
-    Write-Host ("`n#################################################################") -ForegroundColor Red -BackgroundColor Black
-    Write-Host ("This window will close in 10 seconds") -ForegroundColor Red -BackgroundColor Black
-    Write-Host ("The creation of the next plot will start when this window is closed") -ForegroundColor Red -BackgroundColor Black
-    Write-Host ("###################################################################`n") -ForegroundColor Red -BackgroundColor Black
+    # Display information
+    PrintMsg -msg $CPlang.ResetVariablesInProgress
 
-    # Stop logs if activated
-    if($config['logs'])
+    # Takes a break
+    start-sleep -s $smallTime
+
+    # Resets variables
+    Clear-Variable -Name ("resetTempDir","resetFinalDir")
+
+    # Takes a break
+    start-sleep -s $smallTime
+
+    # Display information
+    PrintMsg -msg $CPlang.ResetVariables
+
+    # Takes a break
+    start-sleep -s $smallTime
+
+    # Checks if the copy process is running and allocates double the space for the next plot
+    If (Get-Process -Name "Robocopy" -ErrorAction SilentlyContinue)
     {
-        Stop-Transcript
+        $requiredSpace = 204
+    }
+    else
+    {
+        $requiredSpace = 102
     }
 
-    # Pausing
-    start-sleep -s $bigTime
+    # Takes a break
+    start-sleep -s $midTime
 
-    # Launch of a new plot creation
-    cmd /c start powershell -NoExit -file $ScriptDir\$ScriptName
-
-    # Pausing
-    start-sleep -s $bigTime
-
-    # We leave this script window
-    exit
+    # Relaunch the creation of plots
+    ."$scriptDir\$scriptName"
 }
