@@ -117,7 +117,7 @@ Function SelectDisk {
 Function MovePlots {
     Param (
         [string]$tmpDir,
-        [String]$logDirMoved,
+        [String]$logDir,
         [String]$finalDir,
         [String]$dateTime,
         [int]$sleepTime,
@@ -135,20 +135,20 @@ Function MovePlots {
     if($logsMoved)
     {
         # Check if repertory exists
-        if (!(Test-Path -Path "$logDirMoved")) 
+        if (!(Test-Path -Path "$logDir")) 
         {   
             # Create repertory if not exists
-            New-Item -Path "$logDirMoved" -ItemType Container
+            New-Item -Path "$logDir" -ItemType Container
         }
 
         # Display information
-        PrintMsg -msg $UTlang.LogsInProgress -msg2 "$logDirMoved\moved_log_$dateTime.log"
+        PrintMsg -msg $UTlang.LogsInProgress -msg2 "$logDir\moved_log_$dateTime.log"
 
         # Takes a break
         start-sleep -s $smallTime
 
         # Starts the creation of plots with logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
-        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy '$tmpDir' '$finalDir' *.plot /unilog:'$logDirMoved\moved_log_$dateTime.log' /tee /mov; sleep $sleepTime}"
+        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy '$tmpDir' '$finalDir' *.plot /unilog:'$logDir\moved_log_$dateTime.log' /tee /mov; sleep $sleepTime}"
         $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
     }
     else

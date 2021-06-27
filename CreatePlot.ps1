@@ -25,7 +25,6 @@ $config = ConvertFrom-YAML $content
 $config["logDir"]   = ValPath -path $config["logDir"]
 $config["tmpDir"]   = ValPath -path $config["tmpDir"]
 $config["tmpDir2"]  = ValPath -path $config["tmpDir2"]
-$config["logDirMoved"]  = ValPath -path $config["logDirMoved"]
 $config["chiaPlotterLoc"] = ValPath -path $config["chiaPlotterLoc"]
 
 # Define break time
@@ -47,7 +46,7 @@ start-sleep -s $smallTime
 if(($movePlots -eq $null))
 {
     # Launch plot movement
-    $movePlots = MovePlots -tmpdir $config["tmpDir"] -finaldir $finalDir -logs $config["logsMoved"] -logDir $config["logDirMoved"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -sleepTime $sleepTime -dateTime $dateTime
+    $movePlots = MovePlots -tmpdir $config["tmpDir"] -finaldir $finalDir -logs $config["logsMoved"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -sleepTime $sleepTime -dateTime $dateTime
 }
 
 # Takes a break

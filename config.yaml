@@ -11,6 +11,5 @@ finalDir:
 tmpToggle: false
 chiaPlotterLoc: YOUR MADMAX FOLDER
 logs: false
-logDir: YOUR LOG CREATOR FOLDER
 logsMoved: false
-logDirMoved: YOUR LOG MOVER FOLDER
+logDir: YOUR LOG CREATOR FOLDER
