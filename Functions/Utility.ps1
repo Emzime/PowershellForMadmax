@@ -102,18 +102,6 @@ Function SelectDisk {
         # Takes a break
         start-sleep -s $midTime
 
-        # stop if there is no more space
-        if($diskSpace -lt $requiredSpace)
-        {
-            PrintMsg -msg $UTlang.FreeSpaceFull -textColor "Red" -backColor "Black" -sharpColor "Red"
-            PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
-            $input = Read-Host
-            exit
-        }
-
-        # Takes a break
-        start-sleep -s $smallTime
-
         # Check which disk is available
         if ($diskSpace -ge $requiredSpace)
         {    
