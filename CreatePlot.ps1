@@ -20,7 +20,7 @@ Import-Module $scriptDir\PSYaml
 $CPlang = Import-LocalizedData -BaseDirectory Lang
 
 # Importing functions
-."$scriptDir\Functions\Utility.ps1"
+."$scriptDir\Utility.ps1"
 
 # Get config.yaml file
 [string[]]$fileContent = Get-Content "config.yaml"
