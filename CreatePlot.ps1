@@ -98,8 +98,8 @@ if((Get-Process -NAME "chia_plot" -erroraction "silentlycontinue") -eq $null)
             }
             else 
             {
-                PrintMsg -msg $CPlang.ProcessMoveClosedImpossible -textColor "Red" -backColor "Black" -sharpColor "Black"
-                PrintMsg -msg $CPlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Black"
+                PrintMsg -msg $CPlang.ProcessMoveClosedImpossible -textColor "Red" -backColor "Black" -sharpColor "Red"
+                PrintMsg -msg $CPlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
                 $input = Read-Host
             }
 

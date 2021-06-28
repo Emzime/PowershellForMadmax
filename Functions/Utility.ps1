@@ -42,17 +42,21 @@ Function PrintMsg {
     if($bld){$btld = "`n"}
 
     # Condition
-    if($msg1 -AND $msg2)
+    if($msg1)
     {
-        $charCount = ($msg.Length + 2) + ($msg2.Length + 1)
+        $charCount = ($msg.Length + 2) + ($msg2.Length) + ($msg3.Length)
     }
-    elseif($msg2 -AND $msg3)
+    elseif($msg2)
+    {
+        $charCount = ($msg.Length + 2) + ($msg2.Length + 1) + ($msg3.Length)
+    }
+    elseif($msg3)
     {
         $charCount = ($msg.Length + 2) + ($msg2.Length + 1) + ($msg3.Length + 1)
     }
     else
     {
-        $charCount = ($msg.Length + 2) + ($msg2.Length + 1) + ($msg3.Length)
+        $charCount = ($msg.Length + 2) + ($msg2.Length) + ($msg3.Length)
     }
 
     # Count number of #
@@ -90,7 +94,25 @@ Function SelectDisk {
         $diskSpace = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='$($_):'" | Select-Object FreeSpace
 
         # Defines space in Gio
-        $diskSpace = [int] [math]::Round($diskSpace.FreeSpace / 1073741824)
+        $diskSpace = [int] [math]::Round($diskSpace.FreeSpace / 1073741824)    
+
+        # Display letter
+        PrintMsg -msg $UTlang.TestSpaceDisk
+
+        # Takes a break
+        start-sleep -s $midTime
+
+        # stop if there is no more space
+        if($diskSpace -lt $requiredSpace)
+        {
+            PrintMsg -msg $UTlang.FreeSpaceFull -textColor "Red" -backColor "Black" -sharpColor "Red"
+            PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
+            $input = Read-Host
+            exit
+        }
+
+        # Takes a break
+        start-sleep -s $smallTime
 
         # Check which disk is available
         if ($diskSpace -ge $requiredSpace)
@@ -102,7 +124,7 @@ Function SelectDisk {
             start-sleep -s $smallTime
 
             # Display available capacity
-            PrintMsg -msg $UTlang.FreeSpaceRemaining -msg2 $diskSpace -msg3 $UTlang.Gigaoctet
+            PrintMsg -msg $UTlang.FreeSpaceRemaining -msg2 $diskSpace -msg3 $UTlang.Gigaoctet 
 
             # Return hard disk letter
             return "$($_):\"
