@@ -261,8 +261,10 @@ Function CheckPath
     # Check if logDir path exists and apply ValPath
     if(!($logDir))
     {
-        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> logDir"
-        pause
+        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> logDir" -textColor "Red" -backColor "Black" -sharpColor "Red"
+        PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
+        $input = Read-Host
+        exit
     }
     elseif (!(Test-Path -Path "$logDir"))
     {
@@ -290,8 +292,10 @@ Function CheckPath
     # Check if tmpDir path exists and apply ValPath
     if(!($tmpDir))
     {
-        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> tmpDir"
-        pause
+        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> tmpDir" -textColor "Red" -backColor "Black" -sharpColor "Red"
+        PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
+        $input = Read-Host
+        exit
     }
     elseif (!(Test-Path -Path "$tmpDir"))
     {
@@ -319,8 +323,10 @@ Function CheckPath
     # Check if tmpDir2 path exists and apply ValPath
     if(!($tmpDir2))
     {
-        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> tmpDir2"
-        pause
+        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> tmpDir2" -textColor "Red" -backColor "Black" -sharpColor "Red"
+        PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
+        $input = Read-Host
+        exit
     }
     elseif (!(Test-Path -Path "$tmpDir2"))
     {
@@ -348,8 +354,10 @@ Function CheckPath
     # Check if chiaPlotterLoc path exists and apply ValPath
     if(!($chiaPlotterLoc))
     {
-        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> chiaPlotterLoc"
-        pause
+        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> chiaPlotterLoc" -textColor "Red" -backColor "Black" -sharpColor "Red"
+        PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
+        $input = Read-Host
+        exit
     }
     elseif (!(Test-Path -Path "$chiaPlotterLoc"))
     {
