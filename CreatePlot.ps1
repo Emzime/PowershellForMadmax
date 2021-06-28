@@ -56,10 +56,19 @@ else
 }
 
 # Verification and allocation of disk space
-$finalDir = SelectDisk -finaldir $config["finalDir"] -requiredSpace $requiredSpace -smallTime $smallTime -midTime $midTime -bigTime $bigTime
+$SelectDisk = SelectDisk -finaldir $config["finalDir"] -requiredSpace $requiredSpace -smallTime $smallTime -midTime $midTime -bigTime $bigTime
+
+# stop if there is no more space
+if(!($SelectDisk))
+{
+    PrintMsg -msg $UTlang.FreeSpaceFull -textColor "Red" -backColor "Black" -sharpColor "Red"
+    PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
+    $input = Read-Host
+    exit
+}
 
 # Start script
-$createPlots = CreatePlots -threads $config["threads"] -buckets $config["buckets"] -buckets3 $config["buckets3"] -farmerkey $config["farmerkey"] -poolkey $config["poolKey"] -tmpdir $config["tmpDir"] -tmpdir2 $config["tmpDir2"] -finaldir $finalDir -tmptoggle $config["tmpToggle"] -chiaPlotterLoc $config["chiaPlotterLoc"] -logs $config["logs"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -dateTime $dateTime
+$createPlots = CreatePlots -threads $config["threads"] -buckets $config["buckets"] -buckets3 $config["buckets3"] -farmerkey $config["farmerkey"] -poolkey $config["poolKey"] -tmpdir $config["tmpDir"] -tmpdir2 $config["tmpDir2"] -finaldir $SelectDisk -tmptoggle $config["tmpToggle"] -chiaPlotterLoc $config["chiaPlotterLoc"] -logs $config["logs"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -dateTime $dateTime
 
 # Takes a break
 start-sleep -s $midTime
@@ -75,12 +84,12 @@ if((Get-Process -NAME "chia_plot" -erroraction "silentlycontinue") -eq $null)
     If (!(Get-Process -Name "Robocopy" -ErrorAction SilentlyContinue))
     {
         # Launch plot movement
-        $movePlots = MovePlots -tmpdir $config["tmpDir"] -finaldir $finalDir -logs $config["logsMoved"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -sleepTime $sleepTime -dateTime $dateTime
+        $movePlots = MovePlots -tmpdir $config["tmpDir"] -finaldir $SelectDisk -logs $config["logsMoved"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -sleepTime $sleepTime -dateTime $dateTime
     }
     else 
     {
         # If the final disk is different from the new one, the transfer window is closed and another one is opened
-        if(!($finalDir -eq $resetFinalDir))
+        if(!($SelectDisk -eq $resetFinalDir))
         {
             # Displays the process ID if it is found
             if($movePlots)
@@ -110,7 +119,7 @@ if((Get-Process -NAME "chia_plot" -erroraction "silentlycontinue") -eq $null)
             # Takes a break
             start-sleep -s $smallTime
             # Launch plot movement
-            $movePlots = MovePlots -tmpdir $config["tmpDir"] -finaldir $finalDir -logs $config["logsMoved"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -sleepTime $sleepTime -dateTime $dateTime
+            $movePlots = MovePlots -tmpdir $config["tmpDir"] -finaldir $SelectDisk -logs $config["logsMoved"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -sleepTime $sleepTime -dateTime $dateTime
         }
         else 
         {
