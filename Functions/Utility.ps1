@@ -84,9 +84,6 @@ Function SelectDisk {
     # Display information about the space required
     PrintMsg -msg $UTlang.SpaceRequire -msg2 $requiredSpace -msg3 $UTlang.Gigaoctet -blu $true
 
-    # Takes a break
-    start-sleep -s $smallTime
-
     # We make a loop to find the free space
     foreach ($_ in $finalDir)
     {
@@ -94,25 +91,32 @@ Function SelectDisk {
         $diskSpace = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='$($_):'" | Select-Object FreeSpace
 
         # Defines space in Gio
-        $diskSpace = [int] [math]::Round($diskSpace.FreeSpace / 1073741824)    
-
-        # Display letter
-        PrintMsg -msg $UTlang.TestSpaceDisk
+        $diskSpace = [int] [math]::Round($diskSpace.FreeSpace / 1073741824)
 
         # Takes a break
-        start-sleep -s $midTime
+        start-sleep -s $smallTime
 
         # Check which disk is available
         if ($diskSpace -ge $requiredSpace)
         {    
+
+            # Display letter
+            PrintMsg -msg $UTlang.TestSpaceDisk
+
+            # Takes a break
+            start-sleep -s $smallTime 
+
+            # Display available capacity
+            PrintMsg -msg $UTlang.FreeSpaceRemaining -msg2 $diskSpace -msg3 $UTlang.Gigaoctet
+
+            # Takes a break
+            start-sleep -s $smallTime 
+
             # Display letter
             PrintMsg -msg $UTlang.FinaleDiskUsed -msg2 "$($_):\"
 
             # Takes a break
             start-sleep -s $smallTime
-
-            # Display available capacity
-            PrintMsg -msg $UTlang.FreeSpaceRemaining -msg2 $diskSpace -msg3 $UTlang.Gigaoctet 
 
             # Return hard disk letter
             return "$($_):\"
@@ -147,9 +151,6 @@ Function MovePlots {
         # Starts the creation of plots with logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
         $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy '$tmpDir' '$finalDir' *.plot /unilog:'$logDir\moved_log_$dateTime.log' /tee /mov; sleep $sleepTime}"
         $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
-
-        # Takes a break
-        start-sleep -s $smallTime
 
         # Display information
         PrintMsg -msg $UTlang.LogsInProgress -msg2 "$logDir\moved_log_$dateTime.log"
@@ -208,11 +209,20 @@ function CreatePlots {
         # Takes a break
         start-sleep -s $smallTime
 
+        # Display information
+        PrintMsg -msg $UTlang.LaunchCreatePlot
+
+        # Takes a break
+        start-sleep -s $smallTime
+
         # Starts the creation of plots with logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
         $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --buckets3 $buckets3 --tmpdir $tmpDir --tmpdir2 $tmpDir2 --tmptoggle $tmpToggle --farmerkey $farmerKey --poolkey $poolKey --count 1 | tee "$logDir\created_log_$dateTime.log" | Out-Default
     }
     else
     {
+        # Takes a break
+        start-sleep -s $smallTime
+
         # Starts the creation of plots without logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
         $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --buckets3 $buckets3 --tmpdir $tmpDir --tmpdir2 $tmpDir2 --tmptoggle $tmpToggle --farmerkey $farmerKey --poolkey $poolKey --count 1 | Out-Default
     }
@@ -223,14 +233,8 @@ function CreatePlots {
     # Display information
     PrintMsg -msg $UTlang.CreatePlotInProgress -msg2 $UTlang.ProcessID  -msg3 $processCreatePlots.ID
 
-    # Takes a break
-    start-sleep -s $smallTime
-
     # Get process id
     return $processCreatePlots.ID
-
-    # Takes a break
-    start-sleep -s $smallTime
 }
 
 Function CheckPath
@@ -368,5 +372,5 @@ Function CheckPath
     }
 
     # Takes a break
-    start-sleep -s $midTime
+    start-sleep -s $smallTime
 }
