@@ -5,7 +5,7 @@ free storage drives for creating <a href="https://www.chia.net/" target="_blank"
 
 # Installation
 
-Extract the folder where you want, fill in the config.yaml file and then run (right click, run with powershell) CreatePlot.ps1 or double click CreatePlot.bat<br>
+Extract the folder where you want, fill in the config.yaml file and then double click Run.bat<br>
 All you have to do is wait until your disks are full.
 
 # Next step
@@ -21,7 +21,7 @@ libre des disques de stockage pour la création de <a href="https://www.chia.net
 
 # Installation
 
-Extrayez le dossier où vous voulez, remplissez le fichier config.yaml puis exécutez (clic droit, exécuter avec powershell) CreatePlot.ps1 ou double-cliquez sur CreatePlot.bat<br>
+Extrayez le dossier où vous voulez, remplissez le fichier config.yaml puis double-cliquez sur Run.bat<br>
 Il ne vous reste plus qu'à attendre que vos disques soit plein.
 
 # Etape suivante
