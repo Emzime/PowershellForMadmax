@@ -41,7 +41,6 @@ Clear-Host
 
 # Apply ValPath
 CheckPath -logDir $config["logDir"] -tmpDir $config["tmpDir"] -tmpDir2 $config["tmpDir2"] -chiaPlotterLoc $config["chiaPlotterLoc"]
-
 # Clear window
 Clear-Host
 

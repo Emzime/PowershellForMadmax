@@ -253,10 +253,16 @@ Function CheckPath
     # Check if logDir path exists and apply ValPath
     if(!($logDir))
     {
-        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> logDir" -textColor "Red" -backColor "Black" -sharpColor "Red"
-        PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
-        $input = Read-Host
-        exit
+        $logDir = "$chiaPlotterLoc\Logs\"
+        $newItem = New-Item -Path "$logDir" -ItemType Container
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.TempDirCreated -msg2 "-> logDir"     
+        # Takes a break
+        start-sleep -s $smallTime
+        # Apply ValPath
+        $config["logDir"] = ValPath -path $logDir
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.ValPathApply -msg2 "logDir"
     }
     elseif (!(Test-Path -Path "$logDir"))
     {
