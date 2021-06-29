@@ -1,28 +1,30 @@
 # chia_plot [OPTION...]
 
-# -n, --count arg      Number of plots to create (default = 1, -1 = infinite)
 # -r, --threads arg    Number of threads (default = 4)
-# -u, --buckets arg    Number of buckets (default = 256)
-# -v, --buckets3 arg   Number of buckets for phase 3+4 (default = buckets)
-# -t, --tmpdir arg     Temporary directory, needs ~220 GiB (default = $PWD)
-# -2, --tmpdir2 arg    Temporary directory 2, needs ~110 GiB [RAM] (default = <tmpdir>)
-# -d, --finaldir arg   Final directory (default = <tmpdir>)
-# -p, --poolkey arg    Pool Public Key (48 bytes)
-# -f, --farmerkey arg  Farmer Public Key (48 bytes)
-# -G, --tmptoggle      Alternate tmpdir/tmpdir2 (default = false)
-
 threads: 6
+# -u, --buckets arg    Number of buckets (default = 256)
 buckets: 128
-buckets3: 128
+# -v, --buckets3 arg   Number of buckets for phase 3+4 (default = buckets)
+buckets3: 256
+# -f, --farmerkey arg  Farmer Public Key (48 bytes)
 farmerKey: YOUR FARMER KEY
+# -p, --poolkey arg    Pool Public Key (48 bytes)
 poolKey: YOUR POOL KEY
+# -t, --tmpdir arg     Temporary directory, needs ~220 GiB (default = $PWD)
 tmpDir: YOUR TEMP FOLDER
-tmpDir2: YOUR TEMPORARY DIRECTORY 2 RAMDISK
+# -2, --tmpdir2 arg    Temporary directory 2, needs ~110 GiB [RAM] (default = <tmpdir>)
+tmpDir2: YOUR TEMPORARY DIRECTORY 2 RAMDISK or nothing
+# -d, --finaldir arg   Final directory (default = <tmpdir>)
 finalDir:
-- HDD 1 (just Letter)
-- HDD 2 (just Letter)
-tmpToggle: false
+- F
+- E
+# Your plotter path
 chiaPlotterLoc: YOUR MADMAX FOLDER
+# true/false
 logs: false
+# true/false
 logsMoved: false
-logDir: YOUR LOG CREATOR FOLDER
+# -G, --tmptoggle Alternate tmpdir/tmpdir2 (default = false)
+tmpToggle: false
+# Your logdir path
+logDir: YOUR LOG FOLDER
