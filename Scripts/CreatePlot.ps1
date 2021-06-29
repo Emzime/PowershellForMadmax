@@ -14,13 +14,13 @@ $scriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
 $scriptName = $MyInvocation.MyCommand.Name
 
 # File import
-Import-Module $scriptDir\Scripts\PSYaml
+Import-Module $scriptDir\PSYaml
 
 # Intenationalization import
 $CPlang = Import-LocalizedData -BaseDirectory "Scripts\Lang"
 
 # Importing functions
-."$scriptDir\Scripts\Utility.ps1"
+."$scriptDir\Utility.ps1"
 
 # Get config.yaml file
 [string[]]$fileContent = Get-Content "config.yaml"
@@ -39,8 +39,12 @@ $bigTime = 5
 # Clear window
 Clear-Host
 
+# Set default logDir directory if not spécified
+if($config["logDir"]){$config["logDir"] =$config["logDir"]}else{$config["logDir"] = "C:\Users\$env:UserName\Desktop\Logs\"}
+
 # Apply ValPath
 CheckPath -logDir $config["logDir"] -tmpDir $config["tmpDir"] -tmpDir2 $config["tmpDir2"] -chiaPlotterLoc $config["chiaPlotterLoc"]
+
 # Clear window
 Clear-Host
 
