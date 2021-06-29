@@ -14,13 +14,13 @@ $scriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
 $scriptName = $MyInvocation.MyCommand.Name
 
 # File import
-Import-Module $scriptDir\PSYaml
+Import-Module $scriptDir\Scripts\PSYaml
 
 # Intenationalization import
-$CPlang = Import-LocalizedData -BaseDirectory Lang
+$CPlang = Import-LocalizedData -BaseDirectory "Scripts\Lang"
 
 # Importing functions
-."$scriptDir\Utility.ps1"
+."$scriptDir\Scripts\Utility.ps1"
 
 # Get config.yaml file
 [string[]]$fileContent = Get-Content "config.yaml"
