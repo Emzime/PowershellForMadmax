@@ -93,18 +93,18 @@ Function SelectDisk {
         # Defines space in Gio
         $diskSpace = [int] [math]::Round($diskSpace.FreeSpace / 1073741824)
 
-        # Takes a break
-        start-sleep -s $smallTime
-
         # Check which disk is available
         if ($diskSpace -ge $requiredSpace)
         {    
+
+            # Takes a break
+            start-sleep -s $smallTime
 
             # Display letter
             PrintMsg -msg $UTlang.TestSpaceDisk
 
             # Takes a break
-            start-sleep -s $smallTime 
+            start-sleep -s $midTime 
 
             # Display available capacity
             PrintMsg -msg $UTlang.FreeSpaceRemaining -msg2 $diskSpace -msg3 $UTlang.Gigaoctet
@@ -198,7 +198,17 @@ function CreatePlots {
     if($tmpDir2){$tmpDir2 = $tmpDir2}else{$tmpDir2 = $tmpDir}
 
     # Set tmptoggle if active and tmpDir2 ative
-    if(($tmpDir2) -AND (!($tmpDir2 -eq $tmpDir)) -AND ($tmpToggle -eq $true)){$tmpToggle = $True}else{$tmpToggle = $false}
+    if(($tmpDir2) -AND (!($tmpDir2 -eq $tmpDir)) -AND ($tmpToggle -eq $true)){
+        $tmpToggle = $True
+    }else{
+        $tmpToggle = $false
+
+        # Display information
+        PrintMsg -msg $UTlang.tmpToggleDeactivate
+
+        # Takes a break
+        start-sleep -s $midTime
+    }
 
     # Log creation if logs are enabled
     if($logs)
@@ -247,14 +257,63 @@ Function CheckPath
         [String]$chiaPlotterLoc
     )
 
-    # Set tmpDir2 if active
+    # Set default tmpDir2 directory
     if($tmpDir2){$tmpDir2 = $tmpDir2}else{$tmpDir2 = $tmpDir}
+
+    # Check if chiaPlotterLoc path exists and apply ValPath
+    if(!($chiaPlotterLoc) -or !(Test-Path -Path "$chiaPlotterLoc"))
+    {
+        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> chiaPlotterLoc" -textColor "Red" -backColor "Black" -sharpColor "Red"
+        PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
+        $input = Read-Host
+        exit
+    }
+    else 
+    {
+        # Apply ValPath
+        $config["chiaPlotterLoc"] = ValPath -path $chiaPlotterLoc
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.ValPathApply -msg2 "chiaPlotterLoc"
+    }
+     
+    # Takes a break
+    start-sleep -s $smallTime
+
+    # Check if tmpDir path exists and apply ValPath
+    if(!($tmpDir))
+    {
+        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> tmpDir" -textColor "Red" -backColor "Black" -sharpColor "Red"
+        PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
+        $input = Read-Host
+        exit
+    }
+    elseif (!(Test-Path -Path "$tmpDir"))
+    {
+        # Create tmpDir directory
+        $newItem = New-Item -Path "$tmpDir" -ItemType Container
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.TempDirCreated -msg2 "-> $tmpDir"     
+        # Takes a break
+        start-sleep -s $smallTime
+        # Apply ValPath
+        $config["tmpDir"] = ValPath -path $tmpDir
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.ValPathApply -msg2 "tmpDir"
+    }
+    else 
+    {
+        # Apply ValPath
+        $config["tmpDir"] = ValPath -path $tmpDir
+        # Displays creation of the directory
+        PrintMsg -msg $UTlang.ValPathApply -msg2 "tmpDir"
+    }
+     
+    # Takes a break
+    start-sleep -s $smallTime
 
     # Check if logDir path exists and apply ValPath
     if(!($logDir))
     {
-        # Define log directory default
-        $logDir = "C:\Users\$env:UserName\Desktop\Logs\"
         # Create log directory
         $newItem = New-Item -Path "$logDir" -ItemType Container
         # Displays creation of the directory
@@ -266,7 +325,7 @@ Function CheckPath
         # Displays creation of the directory
         PrintMsg -msg $UTlang.ValPathApply -msg2 "logDir"
     }
-    elseif (!(Test-Path -Path "$logDir"))
+    elseif (!(Test-Path -Path $logDir))
     {
         # Create log directory
         $newItem = New-Item -Path "$logDir" -ItemType Container
@@ -290,42 +349,10 @@ Function CheckPath
     # Takes a break
     start-sleep -s $smallTime
 
-    # Check if tmpDir path exists and apply ValPath
-    if(!($tmpDir))
-    {
-        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> "$tmpDir -textColor "Red" -backColor "Black" -sharpColor "Red"
-        PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
-        $input = Read-Host
-        exit
-    }
-    elseif (!(Test-Path -Path "$tmpDir"))
-    {
-        # Create tmpDir directory
-        $newItem = New-Item -Path "$tmpDir" -ItemType Container
-        # Displays creation of the directory
-        PrintMsg -msg $UTlang.TempDirCreated -msg2 "-> "$tmpDir     
-        # Takes a break
-        start-sleep -s $smallTime
-        # Apply ValPath
-        $config["tmpDir"] = ValPath -path $tmpDir
-        # Displays creation of the directory
-        PrintMsg -msg $UTlang.ValPathApply -msg2 "tmpDir"
-    }
-    else 
-    {
-        # Apply ValPath
-        $config["tmpDir"] = ValPath -path $tmpDir
-        # Displays creation of the directory
-        PrintMsg -msg $UTlang.ValPathApply -msg2 "tmpDir"
-    }
-     
-    # Takes a break
-    start-sleep -s $smallTime
-
     # Check if tmpDir2 path exists and apply ValPath
     if(!($tmpDir2))
     {
-        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> "$tmpDir2 -textColor "Red" -backColor "Black" -sharpColor "Red"
+        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> $tmpDir2" -textColor "Red" -backColor "Black" -sharpColor "Red"
         PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
         $input = Read-Host
         exit
@@ -335,7 +362,7 @@ Function CheckPath
         # Create tmpDir directory
         $newItem = New-Item -Path "$tmpDir2" -ItemType Container
         # Displays creation of the directory
-        PrintMsg -msg $UTlang.TempDirCreated -msg2 "-> "$tmpDir2     
+        PrintMsg -msg $UTlang.TempDirCreated -msg2 "-> $tmpDir2"     
         # Takes a break
         start-sleep -s $smallTime
         # Apply ValPath
@@ -349,25 +376,6 @@ Function CheckPath
         $config["tmpDir2"] = ValPath -path $tmpDir2
         # Displays creation of the directory
         PrintMsg -msg $UTlang.ValPathApply -msg2 "tmpDir2"
-    }
-     
-    # Takes a break
-    start-sleep -s $smallTime
-
-    # Check if chiaPlotterLoc path exists and apply ValPath
-    if(!($chiaPlotterLoc) -or !(Test-Path -Path "$chiaPlotterLoc"))
-    {
-        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> chiaPlotterLoc" -textColor "Red" -backColor "Black" -sharpColor "Red"
-        PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
-        $input = Read-Host
-        exit
-    }
-    else 
-    {
-        # Apply ValPath
-        $config["chiaPlotterLoc"] = ValPath -path $chiaPlotterLoc
-        # Displays creation of the directory
-        PrintMsg -msg $UTlang.ValPathApply -msg2 "chiaPlotterLoc"
     }
 
     # Takes a break
