@@ -1,7 +1,7 @@
 # What it does
 
 Powershell script usable for <a href="https://github.com/stotiks/chia-plotter/releases" target="_blank" />madMax v0.06 chia plotter Windows version</a> that manages the space<br> 
-free storage drives for creating <a href="https://www.chia.net/" target="_blank" />Chia</a> plots.
+free storage drives for creating <a href="https://www.chia.net/" target="_blank" />Chia Network</a>.
 
 # Installation
 
@@ -17,7 +17,7 @@ Set up a Gui, if I can
 # Ce qu'il fait
 
 Script Powershell utilisable pour <a href="https://github.com/stotiks/chia-plotter/releases" target="_blank" />madMax v0.06 chia plotter version Windows</a> qui gère l'espace<br> 
-libre des disques de stockage pour la création de <a href="https://www.chia.net/" target="_blank" />Chia</a> plots.
+libre des disques de stockage pour la création de <a href="https://www.chia.net/" target="_blank" />Chia Network</a>.
 
 # Installation
 
