@@ -45,8 +45,8 @@ if($config["logDir"]){$config["logDir"] =$config["logDir"]}else{$config["logDir"
 # Apply ValPath
 CheckPath -logDir $config["logDir"] -tmpDir $config["tmpDir"] -tmpDir2 $config["tmpDir2"] -chiaPlotterLoc $config["chiaPlotterLoc"]
 
-# Clear window
-Clear-Host
+# Takes a break
+start-sleep -s $smallTime
 
 # Get date and time conversion
 if(($PSCulture) -eq "fr-FR")

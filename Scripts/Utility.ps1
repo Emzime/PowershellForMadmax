@@ -82,7 +82,7 @@ Function SelectDisk {
     if(!($requiredSpace)){$requiredSpace = 102}
 
     # Display information about the space required
-    PrintMsg -msg $UTlang.SpaceRequire -msg2 $requiredSpace -msg3 $UTlang.Gigaoctet -blu $true
+    PrintMsg -msg $UTlang.SpaceRequire -msg2 $requiredSpace -msg3 $UTlang.Gigaoctet
 
     # We make a loop to find the free space
     foreach ($_ in $finalDir)
@@ -95,8 +95,7 @@ Function SelectDisk {
 
         # Check which disk is available
         if ($diskSpace -ge $requiredSpace)
-        {    
-
+        {
             # Takes a break
             start-sleep -s $smallTime
 
@@ -190,7 +189,6 @@ function CreatePlots {
         [bool]$tmpToggle
     )
 
-    # Options
     # Set buckets3 if active
     if($buckets3){$buckets3 = $buckets3}else{$buckets3 = ""}
 
