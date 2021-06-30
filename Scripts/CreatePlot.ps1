@@ -39,14 +39,100 @@ $bigTime = 5
 # Clear window
 Clear-Host
 
-# Set default logDir directory if not spécified
-if($config["logDir"]){$config["logDir"] =$config["logDir"]}else{$config["logDir"] = "C:\Users\$env:UserName\Desktop\Logs\"}
+# Set default logDir directory if not specified
+if($config["logs"] -or $config["logsMoved"])
+{
+    # if logdir not empty
+    if([string]::IsNullOrEmpty($config["logDir"]))
+    {
+        $config["logDir"] = "$($scriptDir)\..\logs"
+    }
+    # if directory not exist, create it
+    if(!(Test-Path -Path $config["logDir"])){CreateFolder -folder $config["logDir"]}
+    # Apply ValPath
+    $config["logDir"] = ValPath -path $config["logDir"]
+    # Displays creation of the directory
+    PrintMsg -msg $CPlang.ValPathApply -msg2 "logDir"
+}
+     
+# Takes a break
+start-sleep -s $smallTime
 
-# Apply ValPath
-CheckPath -logDir $config["logDir"] -tmpDir $config["tmpDir"] -tmpDir2 $config["tmpDir2"] -chiaPlotterLoc $config["chiaPlotterLoc"]
+# Check if tmpDir directory is specified
+if([string]::IsNullOrEmpty($config["tmpDir"]))
+{
+    # Information
+    PrintMsg -msg $CPlang.PathTempNotFound -msg2 "-> tmpDir" -textColor "Red" -backColor "Black" -sharpColor "Red"
+    PrintMsg -msg $CPlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
+    $input = Read-Host
+    exit
+}
+else 
+{
+    # if directory not exist, create it
+    if(!(Test-Path -Path $config["tmpDir"])){CreateFolder -folder $config["tmpDir"]}    
+    # Apply ValPath
+    $config["tmpDir"] = ValPath -path $config["tmpDir"]
+    # Displays creation of the directory
+    PrintMsg -msg $CPlang.ValPathApply -msg2 "tmpDir"
+}
 
 # Takes a break
 start-sleep -s $smallTime
+
+# Set default tmpDir2 directory if not specified
+if([string]::IsNullOrEmpty($config["tmpDir2"]))
+{
+    # Set default tmpDir2 directory
+    $config["tmpDir2"] = $config["tmpDir"]
+}
+else 
+{
+    # if directory not exist, create it
+    if(!(Test-Path -Path $config["tmpDir2"])){CreateFolder -folder $config["tmpDir2"]}    
+    # Apply ValPath
+    $config["tmpDir2"] = ValPath -path $config["tmpDir2"]
+    # Displays creation of the directory
+    PrintMsg -msg $CPlang.ValPathApply -msg2 "tmpDir2"
+}
+
+# Check if chiaPlotterLoc directory is specified
+if([string]::IsNullOrEmpty($config["chiaPlotterLoc"]))
+{
+    # Information
+    PrintMsg -msg $CPlang.PathTempNotFound -msg2 "-> chiaPlotterLoc" -textColor "Red" -backColor "Black" -sharpColor "Red"
+    PrintMsg -msg $CPlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
+    $input = Read-Host
+    exit
+}
+else 
+{
+    # Apply ValPath
+    $config["chiaPlotterLoc"] = ValPath -path $config["chiaPlotterLoc"]
+    # Displays creation of the directory
+    PrintMsg -msg $CPlang.ValPathApply -msg2 "chiaPlotterLoc"
+}
+
+# Takes a break
+start-sleep -s $smallTime
+
+# Set tmptoggle if active and tmpDir2 ative
+if( ($config["tmpToggle"]) -AND (($tmpDir2 -eq $tmpDir)) )
+{
+    # Display information
+    PrintMsg -msg $CPlang.tmpToggleDeactivate
+    # Turn off
+    $config["tmpToggle"] = $false
+    # Takes a break
+    start-sleep -s $midTime
+}
+else 
+{
+    # Display information
+    PrintMsg -msg $CPlang.tmpToggleTrue
+    # Takes a break
+    start-sleep -s $smallTime
+}
 
 # Get date and time conversion
 if(($PSCulture) -eq "fr-FR")
@@ -64,8 +150,8 @@ $SelectDisk = SelectDisk -finaldir $config["finalDir"] -requiredSpace $requiredS
 # stop if there is no more space
 if(!($SelectDisk))
 {
-    PrintMsg -msg $UTlang.FreeSpaceFull -textColor "Red" -backColor "Black" -sharpColor "Red"
-    PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
+    PrintMsg -msg $CPlang.FreeSpaceFull -textColor "Red" -backColor "Black" -sharpColor "Red"
+    PrintMsg -msg $CPlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
     $input = Read-Host
     exit
 }
