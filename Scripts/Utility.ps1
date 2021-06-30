@@ -190,23 +190,7 @@ function CreatePlots {
     )
 
     # Set buckets3 if active
-    if($buckets3){$buckets3 = $buckets3}else{$buckets3 = ""}
-
-    # Set tmpDir2 if active
-    if($tmpDir2){$tmpDir2 = $tmpDir2}else{$tmpDir2 = $tmpDir}
-
-    # Set tmptoggle if active and tmpDir2 ative
-    if(($tmpDir2) -AND (!($tmpDir2 -eq $tmpDir)) -AND ($tmpToggle -eq $true)){
-        $tmpToggle = $True
-    }else{
-        $tmpToggle = $false
-
-        # Display information
-        PrintMsg -msg $UTlang.tmpToggleDeactivate
-
-        # Takes a break
-        start-sleep -s $midTime
-    }
+    if(!($buckets3)){$buckets3 = ""}
 
     # Log creation if logs are enabled
     if($logs)
@@ -245,137 +229,16 @@ function CreatePlots {
     return $processCreatePlots.ID
 }
 
-Function CheckPath
+Function CreateFolder
 {
-    [CmdletBinding()]
-    Param (
-        [String]$logDir,
-        [string]$tmpDir,
-        [string]$tmpDir2,
-        [String]$chiaPlotterLoc
+    Param(
+        [String]$folder
     )
 
-    # Set default tmpDir2 directory
-    if($tmpDir2){$tmpDir2 = $tmpDir2}else{$tmpDir2 = $tmpDir}
-
-    # Check if chiaPlotterLoc path exists and apply ValPath
-    if(!($chiaPlotterLoc) -or !(Test-Path -Path "$chiaPlotterLoc"))
-    {
-        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> chiaPlotterLoc" -textColor "Red" -backColor "Black" -sharpColor "Red"
-        PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
-        $input = Read-Host
-        exit
-    }
-    else 
-    {
-        # Apply ValPath
-        $config["chiaPlotterLoc"] = ValPath -path $chiaPlotterLoc
-        # Displays creation of the directory
-        PrintMsg -msg $UTlang.ValPathApply -msg2 "chiaPlotterLoc"
-    }
-     
-    # Takes a break
-    start-sleep -s $smallTime
-
-    # Check if tmpDir path exists and apply ValPath
-    if(!($tmpDir))
-    {
-        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> tmpDir" -textColor "Red" -backColor "Black" -sharpColor "Red"
-        PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
-        $input = Read-Host
-        exit
-    }
-    elseif (!(Test-Path -Path "$tmpDir"))
-    {
-        # Create tmpDir directory
-        $newItem = New-Item -Path "$tmpDir" -ItemType Container
-        # Displays creation of the directory
-        PrintMsg -msg $UTlang.TempDirCreated -msg2 "-> $tmpDir"     
-        # Takes a break
-        start-sleep -s $smallTime
-        # Apply ValPath
-        $config["tmpDir"] = ValPath -path $tmpDir
-        # Displays creation of the directory
-        PrintMsg -msg $UTlang.ValPathApply -msg2 "tmpDir"
-    }
-    else 
-    {
-        # Apply ValPath
-        $config["tmpDir"] = ValPath -path $tmpDir
-        # Displays creation of the directory
-        PrintMsg -msg $UTlang.ValPathApply -msg2 "tmpDir"
-    }
-     
-    # Takes a break
-    start-sleep -s $smallTime
-
-    # Check if logDir path exists and apply ValPath
-    if(!($logDir))
-    {
-        # Create log directory
-        $newItem = New-Item -Path "$logDir" -ItemType Container
-        # Displays creation of the directory
-        PrintMsg -msg $UTlang.TempDirCreated -msg2 "-> "$logDir    
-        # Takes a break
-        start-sleep -s $smallTime
-        # Apply ValPath
-        $config["logDir"] = ValPath -path $logDir
-        # Displays creation of the directory
-        PrintMsg -msg $UTlang.ValPathApply -msg2 "logDir"
-    }
-    elseif (!(Test-Path -Path $logDir))
-    {
-        # Create log directory
-        $newItem = New-Item -Path "$logDir" -ItemType Container
-        # Displays creation of the directory
-        PrintMsg -msg $UTlang.TempDirCreated -msg2 "-> "$logDir     
-        # Takes a break
-        start-sleep -s $smallTime
-        # Apply ValPath
-        $config["logDir"] = ValPath -path $logDir
-        # Displays creation of the directory
-        PrintMsg -msg $UTlang.ValPathApply -msg2 "logDir"
-    }
-    else 
-    {
-        # Apply ValPath
-        $results = ValPath -path $logDir
-        # Displays creation of the directory
-        PrintMsg -msg $UTlang.ValPathApply -msg2 "logDir"
-    }
-     
-    # Takes a break
-    start-sleep -s $smallTime
-
-    # Check if tmpDir2 path exists and apply ValPath
-    if(!($tmpDir2))
-    {
-        PrintMsg -msg $UTlang.PathTempNotFound -msg2 "-> $tmpDir2" -textColor "Red" -backColor "Black" -sharpColor "Red"
-        PrintMsg -msg $UTlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
-        $input = Read-Host
-        exit
-    }
-    elseif (!(Test-Path -Path "$tmpDir2"))
-    {
-        # Create tmpDir directory
-        $newItem = New-Item -Path "$tmpDir2" -ItemType Container
-        # Displays creation of the directory
-        PrintMsg -msg $UTlang.TempDirCreated -msg2 "-> $tmpDir2"     
-        # Takes a break
-        start-sleep -s $smallTime
-        # Apply ValPath
-        $config["tmpDir2"] = ValPath -path $tmpDir2
-        # Displays creation of the directory
-        PrintMsg -msg $UTlang.ValPathApply -msg2 "tmpDir2"
-    }
-    else 
-    {
-        # Apply ValPath
-        $config["tmpDir2"] = ValPath -path $tmpDir2
-        # Displays creation of the directory
-        PrintMsg -msg $UTlang.ValPathApply -msg2 "tmpDir2"
-    }
-
+    # Create tmpDir directory
+    $newItem = New-Item -Path "$folder" -ItemType Container
+    # Displays creation of the directory
+    PrintMsg -msg $UTlang.TempDirCreated -msg2 "-> $folder"
     # Takes a break
     start-sleep -s $smallTime
 }

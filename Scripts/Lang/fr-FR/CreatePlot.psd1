@@ -9,5 +9,9 @@
     ProcessMoveRelaunch = Relancement du processus de transfert...
     ProcessMoveClosedImpossible = ID du processus de transfert non trouvé, vous devez fermer la fenêtre de transfert avant de continuer
     ProcessMoveClosedImpossibleEnter = Appuyez sur ENTREE pour continuer...
-    PathTempNotFound = You didn't give a path for the temporary files
+    PathTempNotFound = Tu n'as pas rempli correctement le fichier config.yaml
+    FreeSpaceFull = ATTENTION: Tout les disques sont pleins, ajoute un disque à la liste !
+    ValPathApply = ValPath appliqué à
+    TmpToggleTrue = tmpToggle activé
+    tmpToggleDeactivate = Tu as activé l'option tmpToggle, mais tu n'as pas spécifié tmpDir2. L'option tmpToggle sera donc désactivé
 "@
