@@ -5,10 +5,10 @@ $Host.UI.RawUI.BackgroundColor = "Black"
 $Host.UI.RawUI.ForegroundColor = "Yellow"
 
 # Make name to window
-$Host.UI.RawUI.WindowTitle='PowerShell For madMAx'
+$Host.UI.RawUI.WindowTitle = "PowerShell For madMAx"
 
 # Load PSYaml module for read yaml file
-$scriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
+$global:scriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
 
 # Search for the name of the script
 $scriptName = $MyInvocation.MyCommand.Name
@@ -28,16 +28,19 @@ $content = ''
 foreach ($line in $fileContent) { $content = $content + "`n" + $line }
 
 # Convert config.yaml
-$config = ConvertFrom-YAML $content
+$global:config = ConvertFrom-YAML $content
+
+# Get letters from final disk
+$global:checkDevice = $config["finalDir"].Substring(0,1)
 
 # Define break time
-$sleepTime = 300
-$smallTime = 1
-$midTime = 3
-$bigTime = 5
+$global:sleepTime = 300
+$global:smallTime = 1
+$global:midTime = 3
+$global:bigTime = 5
 
 # Clear window
-Clear-Host
+# Clear-Host
 
 # Set default logDir directory if not specified
 if($config["logs"] -or $config["logsMoved"])
@@ -63,7 +66,7 @@ if([string]::IsNullOrEmpty($config["tmpDir"]))
 {
     # Information
     PrintMsg -msg $CPlang.PathTempNotFound -msg2 "-> tmpDir" -textColor "Red" -backColor "Black" -sharpColor "Red"
-    PrintMsg -msg $CPlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
+    PrintMsg -msg $CPlang.ClickToExit -textColor "Red" -backColor "Black" -sharpColor "Red"
     $input = Read-Host
     exit
 }
@@ -101,7 +104,7 @@ if([string]::IsNullOrEmpty($config["chiaPlotterLoc"]))
 {
     # Information
     PrintMsg -msg $CPlang.PathTempNotFound -msg2 "-> chiaPlotterLoc" -textColor "Red" -backColor "Black" -sharpColor "Red"
-    PrintMsg -msg $CPlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
+    PrintMsg -msg $CPlang.ClickToExit -textColor "Red" -backColor "Black" -sharpColor "Red"
     $input = Read-Host
     exit
 }
@@ -117,7 +120,7 @@ else
 start-sleep -s $smallTime
 
 # Set tmptoggle if active and tmpDir2 ative
-if( ($config["tmpToggle"]) -AND (($tmpDir2 -eq $tmpDir)) )
+if( ($config["tmpToggle"]) -AND (($config["tmpDir2"] -eq $config["tmpDir"])))
 {
     # Display information
     PrintMsg -msg $CPlang.tmpToggleDeactivate
@@ -125,6 +128,13 @@ if( ($config["tmpToggle"]) -AND (($tmpDir2 -eq $tmpDir)) )
     $config["tmpToggle"] = $false
     # Takes a break
     start-sleep -s $midTime
+}
+elseif(!($config["tmpToggle"]))
+{
+    # Display information
+    PrintMsg -msg $CPlang.tmpToggleFalse
+    # Takes a break
+    start-sleep -s $smallTime
 }
 else 
 {
@@ -137,43 +147,46 @@ else
 # Get date and time conversion
 if(($PSCulture) -eq "fr-FR")
 {
-    $dateTime = $((get-date).ToLocalTime()).ToString("dd-MM-yyyy_HH'h'mm'm'ss")
+    $global:dateTime = $((get-date).ToLocalTime()).ToString("dd-MM-yyyy_HH'h'mm'm'ss")
 }
 else
 {
-    $dateTime = $((get-date).ToLocalTime()).ToString("yyyy-MM-dd_hh'h'mm'm'ss")
+    $global:dateTime = $((get-date).ToLocalTime()).ToString("yyyy-MM-dd_hh'h'mm'm'ss")
 }
 
 # Verification and allocation of disk space
-$SelectDisk = SelectDisk -finaldir $config["finalDir"] -requiredSpace $requiredSpace -smallTime $smallTime -midTime $midTime -bigTime $bigTime
+$SelectDisk = SelectDisk
+
+# Final disk for movePlots
+$global:finalSelectDisk = $SelectDisk
 
 # stop if there is no more space
 if(!($SelectDisk))
 {
     PrintMsg -msg $CPlang.FreeSpaceFull -textColor "Red" -backColor "Black" -sharpColor "Red"
-    PrintMsg -msg $CPlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
+    PrintMsg -msg $CPlang.ClickToExit -textColor "Red" -backColor "Black" -sharpColor "Red"
     $input = Read-Host
     exit
 }
 
 # Start script
-$createPlots = CreatePlots -threads $config["threads"] -buckets $config["buckets"] -buckets3 $config["buckets3"] -farmerkey $config["farmerkey"] -poolkey $config["poolKey"] -tmpdir $config["tmpDir"] -tmpdir2 $config["tmpDir2"] -finaldir $SelectDisk -tmptoggle $config["tmpToggle"] -chiaPlotterLoc $config["chiaPlotterLoc"] -logs $config["logs"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -dateTime $dateTime
+$createPlots = CreatePlots
 
 # Takes a break
 start-sleep -s $midTime
 
 # Check if chia_plot process is running
-if((Get-Process -NAME "chia_plot" -erroraction "silentlycontinue") -eq $null)
+if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
 {
     # Define resetting variables
     $resetTempDir   = $config["tmpDir"]
     $resetFinalDir  = $config["finalDir"]
 
     # if the process movePlots has an iD, we retrieve it
-    If (!(Get-Process -Name "Robocopy" -ErrorAction SilentlyContinue))
+    If (!(Get-Process -Name "Robocopy" -ErrorAction "SilentlyContinue"))
     {
         # Launch plot movement
-        $movePlots = MovePlots -tmpdir $config["tmpDir"] -finaldir $SelectDisk -logs $config["logsMoved"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -sleepTime $sleepTime -dateTime $dateTime
+        $movePlots = MovePlots
     }
     else 
     {
@@ -197,7 +210,7 @@ if((Get-Process -NAME "chia_plot" -erroraction "silentlycontinue") -eq $null)
             else 
             {
                 PrintMsg -msg $CPlang.ProcessMoveClosedImpossible -textColor "Red" -backColor "Black" -sharpColor "Red"
-                PrintMsg -msg $CPlang.ProcessMoveClosedImpossibleEnter -textColor "Red" -backColor "Black" -sharpColor "Red"
+                PrintMsg -msg $CPlang.ClickToExit -textColor "Red" -backColor "Black" -sharpColor "Red"
                 $input = Read-Host
             }
 
@@ -208,7 +221,7 @@ if((Get-Process -NAME "chia_plot" -erroraction "silentlycontinue") -eq $null)
             # Takes a break
             start-sleep -s $smallTime
             # Launch plot movement
-            $movePlots = MovePlots -tmpdir $config["tmpDir"] -finaldir $SelectDisk -logs $config["logsMoved"] -logDir $config["logDir"] -smallTime $smallTime -midTime $midTime -bigTime $bigTime -sleepTime $sleepTime -dateTime $dateTime
+            $movePlots = MovePlots
         }
         else 
         {
@@ -246,13 +259,13 @@ if((Get-Process -NAME "chia_plot" -erroraction "silentlycontinue") -eq $null)
     start-sleep -s $smallTime
 
     # Checks if the copy process is running and allocates double the space for the next plot
-    If (Get-Process -Name "Robocopy" -ErrorAction SilentlyContinue)
+    If (Get-Process -Name "Robocopy" -ErrorAction "SilentlyContinue")
     {
-        $requiredSpace = 204
+        $global:requiredSpace = 204
     }
     else
     {
-        $requiredSpace = 102
+        $global:requiredSpace = 102
     }
 
     # Takes a break

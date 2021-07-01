@@ -17,8 +17,6 @@ Function ValPath {
         $path = "$($path)\"
     }
 
-    # $path = $path -replace "\\", "\"
-
     return $path
 }
 
@@ -27,7 +25,7 @@ Function ValPath {
 # @ Use  -bld $false to stop back line on down
 Function PrintMsg {
     Param (
-        [Parameter(Mandatory=$true)]  [String]$msg,
+        [Parameter(Mandatory=$true)]   [String]$msg,
         [Parameter(Mandatory=$false)]  [String]$msg2,
         [Parameter(Mandatory=$false)]  [String]$msg3,
         [Parameter(Mandatory=$false)]  [String]$backColor = "black",
@@ -70,13 +68,6 @@ Function PrintMsg {
 
 # Verification and allocation of disk space
 Function SelectDisk {
-    Param (
-        [Object]$finalDir,
-        [int]$requiredSpace,
-        [int]$smallTime,
-        [int]$midTime,
-        [int]$bigTime
-    )
 
     # Set the default space requirement
     if(!($requiredSpace)){$requiredSpace = 102}
@@ -85,8 +76,11 @@ Function SelectDisk {
     PrintMsg -msg $UTlang.SpaceRequire -msg2 $requiredSpace -msg3 $UTlang.Gigaoctet
 
     # We make a loop to find the free space
-    foreach ($_ in $finalDir)
+    foreach ($_ in $config["finalDir"])
     {
+        # Get letter from finalDir
+        # $deviceCheck = $($_.Substring(0,1))
+
         # We query the selected hard drives
         $diskSpace = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='$($_):'" | Select-Object FreeSpace
 
@@ -103,16 +97,16 @@ Function SelectDisk {
             PrintMsg -msg $UTlang.TestSpaceDisk
 
             # Takes a break
-            start-sleep -s $midTime 
-
-            # Display available capacity
-            PrintMsg -msg $UTlang.FreeSpaceRemaining -msg2 $diskSpace -msg3 $UTlang.Gigaoctet
-
-            # Takes a break
             start-sleep -s $smallTime 
 
             # Display letter
             PrintMsg -msg $UTlang.FinaleDiskUsed -msg2 "$($_):\"
+
+            # Takes a break
+            start-sleep -s $midTime 
+
+            # Display available capacity
+            PrintMsg -msg $UTlang.FreeSpaceRemaining -msg2 $diskSpace -msg3 $UTlang.Gigaoctet
 
             # Takes a break
             start-sleep -s $smallTime
@@ -128,41 +122,36 @@ Function SelectDisk {
 
 # Launching process of moving the plots
 Function MovePlots {
-    Param (
-        [string]$tmpDir,
-        [String]$logDir,
-        [String]$finalDir,
-        [String]$dateTime,
-        [int]$sleepTime,
-        [int]$smallTime,
-        [int]$midTime,
-        [int]$bigTime,
-        [bool]$logsMoved
-    )
 
     # Starts the move window if the process does not exist
     $startMovePlots = new-object System.Diagnostics.ProcessStartInfo
     $startMovePlots.FileName = "$pshome\powershell.exe"
+
+    $tmpDir = $config["tmpDir"]
+    $logDir = $config["logDir"]
     
     # Log creation if logs are enabled
-    if($logsMoved)
+    if($config["logs"])
     {
         # Starts the creation of plots with logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
-        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy '$tmpDir' '$finalDir' *.plot /unilog:'$logDir\moved_log_$dateTime.log' /tee /mov; sleep $sleepTime}"
+        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy $tmpDir $SelectDisk *.plot /unilog:'$logDir\moved_log_$dateTime.log' /tee /mov; sleep $sleepTime}"
         $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
 
         # Display information
-        PrintMsg -msg $UTlang.LogsInProgress -msg2 "$logDir\moved_log_$dateTime.log"
+        PrintMsg -msg $UTlang.LogsInProgress -msg2 $config["logDir"]"\moved_log_$dateTime.log"
     }
     else
     {
         # Starts the creation of plots without logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
-        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy '$tmpDir' '$finalDir' *.plot /mov; sleep $sleepTime}"
+        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy $tmpDir $SelectDisk *.plot /mov; sleep $sleepTime}"
         $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
     }
 
+    # Takes a break
+    start-sleep -s $smallTime
+
     # Display information
-    PrintMsg -msg $UTlang.MovePlotInProgress -msg2 $UTlang.ProcessID  -msg3 $processMovePlots.ID
+    PrintMsg -msg $UTlang.MovePlotInProgress -msg2 $UTlang.ProcessID -msg3 $processMovePlots.ID
 
     # Get process id
     return $processMovePlots.ID
@@ -170,30 +159,17 @@ Function MovePlots {
 
 # Launching the plot creation
 function CreatePlots {
-    Param (
-        [int]$midTime,
-        [Int]$bigTime,
-        [Int]$threads,
-        [Int]$buckets,
-        [Int]$buckets3,
-        [Int]$smallTime,
-        [String]$logDir,
-        [string]$tmpDir,
-        [String]$poolKey,
-        [string]$tmpDir2,
-        [String]$finalDir,
-        [String]$dateTime,
-        [String]$farmerKey,
-        [String]$chiaPlotterLoc,
-        [bool]$logs,
-        [bool]$tmpToggle
-    )
 
     # Set buckets3 if active
-    if(!($buckets3)){$buckets3 = ""}
+    if(!($config["buckets3"])){$config["buckets3"] = ""}
+
+
+    $chiaPlotterLoc = $config["chiaPlotterLoc"]
+    $logDir = $config["logDir"]
+
 
     # Log creation if logs are enabled
-    if($logs)
+    if($config["logs"])
     {
         # Display information
         PrintMsg -msg $UTlang.LogsInProgress -msg2 "$logDir\created_log_$dateTime.log"
@@ -207,23 +183,17 @@ function CreatePlots {
         # Takes a break
         start-sleep -s $smallTime
 
-        # Starts the creation of plots with logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
-        $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --buckets3 $buckets3 --tmpdir $tmpDir --tmpdir2 $tmpDir2 --tmptoggle $tmpToggle --farmerkey $farmerKey --poolkey $poolKey --count 1 | tee "$logDir\created_log_$dateTime.log" | Out-Default
+        # Starts the creation of plots with logs
+        $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $config["poolKey"] --count 1 | tee "$logDir\created_log_$dateTime.log" | Out-Default
     }
     else
     {
         # Takes a break
         start-sleep -s $smallTime
 
-        # Starts the creation of plots without logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
-        $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $threads --buckets $buckets --buckets3 $buckets3 --tmpdir $tmpDir --tmpdir2 $tmpDir2 --tmptoggle $tmpToggle --farmerkey $farmerKey --poolkey $poolKey --count 1 | Out-Default
+        # Starts the creation of plots without logs
+        $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $config["poolKey"] --count 1 | Out-Default
     }
-
-    # Takes a break
-    start-sleep -s $smallTime
-
-    # Display information
-    PrintMsg -msg $UTlang.CreatePlotInProgress -msg2 $UTlang.ProcessID  -msg3 $processCreatePlots.ID
 
     # Get process id
     return $processCreatePlots.ID
