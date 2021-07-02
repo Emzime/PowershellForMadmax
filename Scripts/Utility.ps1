@@ -75,12 +75,16 @@ Function SelectDisk {
     # Display information about the space required
     PrintMsg -msg $UTlang.SpaceRequire -msg2 $requiredSpace -msg3 $UTlang.Gigaoctet
 
-    # We make a loop to find the free space
-    foreach ($_ in $config["finalDir"])
-    {
-        # Get letter from finalDir
-        # $deviceCheck = $($_.Substring(0,1))
+    # Get letters from final disk with folder
+    $global:checkDevice = $config["finalDir"].Substring(0,1)
 
+    # if($config['finalDir'] -gt 1){
+    #     Write-Host $config['finalDir']
+    # }
+
+    # We make a loop to find the free space
+    foreach ($_ in $checkDevice)
+    {
         # We query the selected hard drives
         $diskSpace = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='$($_):'" | Select-Object FreeSpace
 
@@ -122,28 +126,36 @@ Function SelectDisk {
 
 # Launching process of moving the plots
 Function MovePlots {
+    Param(
+        $newPlotLogName = [String]$newPlotLogName
+    )
 
     # Starts the move window if the process does not exist
     $startMovePlots = new-object System.Diagnostics.ProcessStartInfo
     $startMovePlots.FileName = "$pshome\powershell.exe"
 
-    $tmpDir = $config["tmpDir"]
-    $logDir = $config["logDir"]
-    
+    # Get plot name log
+    $newPlotLogName = $config["logDir"] + "Moved_" + $newPlotLogName.Substring(11,$newPlotLogName.Length-11) + ".log"
+
     # Log creation if logs are enabled
-    if($config["logs"])
+    if($config["logsMoved"])
     {
         # Starts the creation of plots with logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
-        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy $tmpDir $SelectDisk *.plot /unilog:'$logDir\moved_log_$dateTime.log' /tee /mov; sleep $sleepTime}"
-        $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
+        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy $($config["tmpDir"]) $finalSelectDisk *.plot /unilog:'$newPlotLogName' /tee /mov; sleep $sleepTime}"
 
         # Display information
-        PrintMsg -msg $UTlang.LogsInProgress -msg2 $config["logDir"]"\moved_log_$dateTime.log"
+        PrintMsg -msg $UTlang.LogsInProgress -msg2 "$newPlotLogName"
+
+        # Takes a break
+        start-sleep -s $smallTime
+
+        # Starts the creation
+        $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
     }
     else
     {
         # Starts the creation of plots without logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
-        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy $tmpDir $SelectDisk *.plot /mov; sleep $sleepTime}"
+        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy $($config["tmpDir"]) $finalSelectDisk *.plot /mov; sleep $sleepTime}"
         $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
     }
 
@@ -163,16 +175,14 @@ function CreatePlots {
     # Set buckets3 if active
     if(!($config["buckets3"])){$config["buckets3"] = ""}
 
-
-    $chiaPlotterLoc = $config["chiaPlotterLoc"]
-    $logDir = $config["logDir"]
-
-
     # Log creation if logs are enabled
     if($config["logs"])
     {
+        # Plot log name
+        $newPlotLogName1 = $($config["logDir"]) + "Create_" + $dateTime + ".log"
+
         # Display information
-        PrintMsg -msg $UTlang.LogsInProgress -msg2 "$logDir\created_log_$dateTime.log"
+        PrintMsg -msg $UTlang.LogsInProgress -msg2 "$newPlotLogName1"
 
         # Takes a break
         start-sleep -s $smallTime
@@ -184,7 +194,16 @@ function CreatePlots {
         start-sleep -s $smallTime
 
         # Starts the creation of plots with logs
-        $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $config["poolKey"] --count 1 | tee "$logDir\created_log_$dateTime.log" | Out-Default
+        $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $config["poolKey"] --count 1 | tee "$newPlotLogName1" | Out-Default
+  
+        # Get log name
+        $plotName = Get-Content -Path "$newPlotLogName1" | where { $_ -match "plot-k32-"}
+
+        # Plot log name
+        $newPlotLogName2 = $config["logDir"] + "Create_" + $plotName.Substring(11,$plotName.Length-11) + ".log"
+
+        # Rename log with plot name
+        $renameCreatedLog = Rename-Item -Path "$newPlotLogName1" -NewName "$newPlotLogName2"
     }
     else
     {
@@ -192,11 +211,11 @@ function CreatePlots {
         start-sleep -s $smallTime
 
         # Starts the creation of plots without logs
-        $processCreatePlots = .$chiaPlotterLoc\chia_plot.exe --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $config["poolKey"] --count 1 | Out-Default
+        $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $config["poolKey"] --count 1 | Out-Default
     }
 
     # Get process id
-    return $processCreatePlots.ID
+    return $plotName
 }
 
 Function CreateFolder
@@ -204,7 +223,6 @@ Function CreateFolder
     Param(
         [String]$folder
     )
-
     # Create tmpDir directory
     $newItem = New-Item -Path "$folder" -ItemType Container
     # Displays creation of the directory

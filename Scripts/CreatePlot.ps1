@@ -30,17 +30,11 @@ foreach ($line in $fileContent) { $content = $content + "`n" + $line }
 # Convert config.yaml
 $global:config = ConvertFrom-YAML $content
 
-# Get letters from final disk
-$global:checkDevice = $config["finalDir"].Substring(0,1)
-
 # Define break time
 $global:sleepTime = 300
 $global:smallTime = 1
 $global:midTime = 3
 $global:bigTime = 5
-
-# Clear window
-# Clear-Host
 
 # Set default logDir directory if not specified
 if($config["logs"] -or $config["logsMoved"])
@@ -48,7 +42,8 @@ if($config["logs"] -or $config["logsMoved"])
     # if logdir not empty
     if([string]::IsNullOrEmpty($config["logDir"]))
     {
-        $config["logDir"] = "$($scriptDir)\..\logs"
+        # 8 char for remove "\Scripts" and add "\logs"
+        $config["logDir"] = $scriptDir.Substring(0,$scriptDir.Length-8) + "\logs"
     }
     # if directory not exist, create it
     if(!(Test-Path -Path $config["logDir"])){CreateFolder -folder $config["logDir"]}
@@ -155,13 +150,10 @@ else
 }
 
 # Verification and allocation of disk space
-$SelectDisk = SelectDisk
-
-# Final disk for movePlots
-$global:finalSelectDisk = $SelectDisk
+$global:finalSelectDisk = SelectDisk
 
 # stop if there is no more space
-if(!($SelectDisk))
+if(!($finalSelectDisk))
 {
     PrintMsg -msg $CPlang.FreeSpaceFull -textColor "Red" -backColor "Black" -sharpColor "Red"
     PrintMsg -msg $CPlang.ClickToExit -textColor "Red" -backColor "Black" -sharpColor "Red"
@@ -170,7 +162,7 @@ if(!($SelectDisk))
 }
 
 # Start script
-$createPlots = CreatePlots
+$newPlotLogName = CreatePlots
 
 # Takes a break
 start-sleep -s $midTime
@@ -183,15 +175,15 @@ if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
     $resetFinalDir  = $config["finalDir"]
 
     # if the process movePlots has an iD, we retrieve it
-    If (!(Get-Process -Name "Robocopy" -ErrorAction "SilentlyContinue"))
+    If (!(Get-Process -Name "Robocopy" -ErrorAction "silentlycontinue"))
     {
         # Launch plot movement
-        $movePlots = MovePlots
+        $movePlots = MovePlots -newPlotLogName $newPlotLogName
     }
     else 
     {
         # If the final disk is different from the new one, the transfer window is closed and another one is opened
-        if(!($SelectDisk -eq $resetFinalDir))
+        if(!($finalSelectDisk -eq $resetFinalDir))
         {
             # Displays the process ID if it is found
             if($movePlots)
@@ -259,7 +251,7 @@ if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
     start-sleep -s $smallTime
 
     # Checks if the copy process is running and allocates double the space for the next plot
-    If (Get-Process -Name "Robocopy" -ErrorAction "SilentlyContinue")
+    If (Get-Process -Name "Robocopy" -ErrorAction "silentlycontinue")
     {
         $global:requiredSpace = 204
     }
