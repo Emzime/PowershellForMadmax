@@ -144,7 +144,7 @@ Function MovePlots {
         $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy $($config["tmpDir"]) $finalSelectDisk *.plot /unilog:'$newPlotLogName' /tee /mov; sleep $sleepTime}"
 
         # Display information
-        PrintMsg -msg $UTlang.LogsInProgress -msg2 "$newPlotLogName"
+        PrintMsg -msg $UTlang.LogsInProgress -msg2 "$newPlotLogName" -blu $true
 
         # Takes a break
         start-sleep -s $smallTime
