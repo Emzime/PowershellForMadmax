@@ -1,9 +1,9 @@
 # chia_plot [OPTION...]
 
 # -r, --threads arg     | Number of threads (default = 4)
-threads: 6
+threads: 4
 # -u, --buckets arg     | Number of buckets (default = 256)
-buckets: 128
+buckets: 256
 # -v, --buckets3 arg    | Number of buckets for phase 3+4 (default = buckets)
 buckets3: 256
 # -f, --farmerkey arg   | Your farmer key
