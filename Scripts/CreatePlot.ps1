@@ -150,7 +150,7 @@ else
 }
 
 # Verification and allocation of disk space
-$global:finalSelectDisk = SelectDisk
+$finalSelectDisk = SelectDisk
 
 # stop if there is no more space
 if(!($finalSelectDisk))
@@ -178,7 +178,7 @@ if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
     If (!(Get-Process -Name "Robocopy" -ErrorAction "silentlycontinue"))
     {
         # Launch plot movement
-        $movePlots = MovePlots -newPlotLogName $newPlotLogName
+        $movePlots = MovePlots -newPlotLogName $newPlotLogName -finalSelectDisk $finalSelectDisk
     }
     else 
     {
@@ -213,7 +213,7 @@ if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
             # Takes a break
             start-sleep -s $smallTime
             # Launch plot movement
-            $movePlots = MovePlots
+            $movePlots = MovePlots -newPlotLogName $newPlotLogName -finalSelectDisk $finalSelectDisk
         }
         else 
         {

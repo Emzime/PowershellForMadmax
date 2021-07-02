@@ -75,18 +75,14 @@ Function SelectDisk {
     # Display information about the space required
     PrintMsg -msg $UTlang.SpaceRequire -msg2 $requiredSpace -msg3 $UTlang.Gigaoctet
 
-    # Get letters from final disk with folder
-    $global:checkDevice = $config["finalDir"].Substring(0,1)
-
-    # if($config['finalDir'] -gt 1){
-    #     Write-Host $config['finalDir']
-    # }
-
     # We make a loop to find the free space
-    foreach ($_ in $checkDevice)
+    foreach ($_ in $config['finalDir'])
     {
+        # Get letters from final disk with folder
+        $deviceLetter = $_.Substring(0,1)
+
         # We query the selected hard drives
-        $diskSpace = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='$($_):'" | Select-Object FreeSpace
+        $diskSpace = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='$($deviceLetter):'" | Select-Object FreeSpace
 
         # Defines space in Gio
         $diskSpace = [int] [math]::Round($diskSpace.FreeSpace / 1073741824)
@@ -104,7 +100,7 @@ Function SelectDisk {
             start-sleep -s $smallTime 
 
             # Display letter
-            PrintMsg -msg $UTlang.FinaleDiskUsed -msg2 "$($_):\"
+            PrintMsg -msg $UTlang.FinaleDiskUsed -msg2 "$($deviceLetter):\"
 
             # Takes a break
             start-sleep -s $midTime 
@@ -116,7 +112,7 @@ Function SelectDisk {
             start-sleep -s $smallTime
 
             # Return hard disk letter
-            return "$($_):\"
+            return $_
         
             # Stop if space available
             break
@@ -127,7 +123,8 @@ Function SelectDisk {
 # Launching process of moving the plots
 Function MovePlots {
     Param(
-        $newPlotLogName = [String]$newPlotLogName
+        $newPlotLogName = [String]$newPlotLogName,
+        $finalSelectDisk = [String]$finalSelectDisk
     )
 
     # Starts the move window if the process does not exist
