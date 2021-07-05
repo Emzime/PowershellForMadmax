@@ -7,8 +7,11 @@ $Host.UI.RawUI.ForegroundColor = "Yellow"
 # Make name to window
 $Host.UI.RawUI.WindowTitle = "PowerShell For madMAx"
 
-# Load PSYaml module for read yaml file
+# Get path file
 $global:scriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
+
+# Unblock file
+Unblock-File -Path $scriptDir
 
 # Search for the name of the script
 $scriptName = $MyInvocation.MyCommand.Name

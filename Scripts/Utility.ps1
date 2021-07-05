@@ -1,4 +1,7 @@
-﻿# Intenationalization import
+﻿# Unblock file
+Unblock-File -Path $scriptDir
+
+# Intenationalization import
 $UTlang = Import-LocalizedData -BaseDirectory "Scripts\lang"
 
 # @Example $config['tmpDir'] = valPath -path $config['tmpDir']
