@@ -191,7 +191,7 @@ function CreatePlots {
         start-sleep -s $smallTime
 
         # Starts the creation of plots with logs
-        $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $config["poolKey"] --count 1 | tee "$newPlotLogName1" | Out-Default
+        $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $config["poolKey"] --contract $config["poolContract"] --count 1 | tee "$newPlotLogName1" | Out-Default
   
         # Get log name
         $plotName = Get-Content -Path "$newPlotLogName1" | where { $_ -match "plot-k32-"}
@@ -208,7 +208,7 @@ function CreatePlots {
         start-sleep -s $smallTime
 
         # Starts the creation of plots without logs
-        $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $config["poolKey"] --count 1 | Out-Default
+        $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $config["poolKey"] --contract $config["poolContract"] --count 1 | Out-Default
     }
 
     # Get process id

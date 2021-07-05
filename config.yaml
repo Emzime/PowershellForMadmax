@@ -10,6 +10,8 @@ buckets3: 256
 farmerKey: 
 # -p, --poolkey arg     | Your pool key
 poolKey: 
+# -c, --contract arg    | Pool Contract Address (64 chars)
+poolContract: 
 # -t, --tmpdir arg      | Your temporary path
 tmpDir: 
 # -2, --tmpdir2 arg     | Your temporary directory 2 / RAMDISK or nothing
