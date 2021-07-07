@@ -1,5 +1,5 @@
 # Update
-07/07/2021 - Update for the creation of plots compatible with the new pool protocol
+07/07/2021 - Update for the creation of compatible plots new pool protocol
 
 
 # What it does
@@ -18,7 +18,7 @@ Set up a Gui, if I can
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Mise à jour
-07/07/2021 - Mise à jour pour la création des plots compatible nouveau protocol de pool
+07/07/2021 - Mise à jour pour la création des plots compatibles nouveau protocol de pool
 
 
 # Ce qu'il fait
