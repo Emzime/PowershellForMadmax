@@ -1,6 +1,10 @@
+# Update
+07/07/2021 - Update for the creation of plots compatible with the new pool protocol
+
+
 # What it does
 
-Powershell script usable for <a href="https://github.com/stotiks/chia-plotter/releases" target="_blank" />madMax v0.06 chia plotter Windows version</a> that manages the space<br> 
+Powershell script usable for <a href="https://github.com/stotiks/chia-plotter/releases" target="_blank" />madMax v0.1.1 chia plotter Windows version</a> that manages the space<br> 
 free storage drives for creating <a href="https://www.chia.net/" target="_blank" />Chia Network</a>.
 
 # Installation
@@ -13,10 +17,13 @@ All you have to do is wait until your disks are full.
 Set up a Gui, if I can
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Mise à jour
+07/07/2021 - Mise à jour pour la création des plots compatible nouveau protocol de pool
+
 
 # Ce qu'il fait
 
-Script Powershell utilisable pour <a href="https://github.com/stotiks/chia-plotter/releases" target="_blank" />madMax v0.06 chia plotter version Windows</a> qui gère l'espace<br> 
+Script Powershell utilisable pour <a href="https://github.com/stotiks/chia-plotter/releases" target="_blank" />madMax v0.1.1 chia plotter version Windows</a> qui gère l'espace<br> 
 libre des disques de stockage pour la création de <a href="https://www.chia.net/" target="_blank" />Chia Network</a>.
 
 # Installation
