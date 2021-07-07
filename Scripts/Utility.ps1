@@ -141,7 +141,7 @@ Function MovePlots {
         $newPlotLogName = $config["logDir"] + "Moved_" + $newPlotLogName.Substring(11,$newPlotLogName.Length-11) + ".log"
 
         # Starts the creation of plots with logs
-        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy $($config["tmpDir"]) $finalSelectDisk *.plot /unilog:'$newPlotLogName' /tee /mov; sleep $sleepTime}"
+        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; robocopy $($config["tmpDir"]) $finalSelectDisk *.plot /unilog:'$newPlotLogName' /tee /mov; exit"
 
         # Display information
         PrintMsg -msg $UTlang.LogsInProgress -msg2 "$newPlotLogName" -blu $true
@@ -155,7 +155,7 @@ Function MovePlots {
     else
     {
         # Starts the creation of plots without logs
-        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy $($config["tmpDir"]) $finalSelectDisk *.plot /mov; sleep $sleepTime}"
+        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; robocopy $($config["tmpDir"]) $finalSelectDisk *.plot /mov; exit"
         $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
     }
 
