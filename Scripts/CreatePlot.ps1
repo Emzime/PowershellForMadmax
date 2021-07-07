@@ -7,8 +7,11 @@ $Host.UI.RawUI.ForegroundColor = "Yellow"
 # Make name to window
 $Host.UI.RawUI.WindowTitle = "PowerShell For madMAx"
 
-# Load PSYaml module for read yaml file
+# Get path file
 $global:scriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
+
+# Unblock file
+Unblock-File -Path $scriptDir
 
 # Search for the name of the script
 $scriptName = $MyInvocation.MyCommand.Name
@@ -174,60 +177,8 @@ if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
     $resetTempDir   = $config["tmpDir"]
     $resetFinalDir  = $config["finalDir"]
 
-    # if the process movePlots has an iD, we retrieve it
-    If (!(Get-Process -Name "Robocopy" -ErrorAction "silentlycontinue"))
-    {
-        # Launch plot movement
-        $movePlots = MovePlots -newPlotLogName $newPlotLogName -finalSelectDisk $finalSelectDisk
-    }
-    else 
-    {
-        # If the final disk is different from the new one, the transfer window is closed and another one is opened
-        if(!($finalSelectDisk -eq $resetFinalDir))
-        {
-            # Displays the process ID if it is found
-            if($movePlots)
-            {
-                # Display information
-                PrintMsg -msg $CPlang.ProcessMoveClosing -msg2  $movePlots -msg3 ")"
-                # Takes a break
-                start-sleep -s $smallTime
-                # Stopping the moving process
-                Stop-Process -ID $movePlots
-                # Takes a break
-                start-sleep -s $smallTime
-                # Display information
-                PrintMsg -msg $CPlang.ProcessMoveClosed
-            }
-            else 
-            {
-                PrintMsg -msg $CPlang.ProcessMoveClosedImpossible -textColor "Red" -backColor "Black" -sharpColor "Red"
-                PrintMsg -msg $CPlang.ClickToExit -textColor "Red" -backColor "Black" -sharpColor "Red"
-                $input = Read-Host
-            }
-
-            # Takes a break
-            start-sleep -s $smallTime
-            # Display information
-            PrintMsg -msg $CPlang.ProcessMoveRelaunch
-            # Takes a break
-            start-sleep -s $smallTime
-            # Launch plot movement
-            $movePlots = MovePlots -newPlotLogName $newPlotLogName -finalSelectDisk $finalSelectDisk
-        }
-        else 
-        {
-            # Displays the process ID if it is found
-            if($movePlots)
-            {
-                PrintMsg -msg $CPlang.ProcessMoveAlreadyLaunch -msg2 $CPlang.ProcessID  -msg3 $movePlots
-            }
-            else 
-            {
-                PrintMsg -msg $CPlang.ProcessMoveAlreadyLaunch
-            }
-        }
-    }
+    # Launch plot movement
+    $movePlots = MovePlots -newPlotLogName $newPlotLogName -finalSelectDisk $finalSelectDisk
 
     # Takes a break
     start-sleep -s $smallTime

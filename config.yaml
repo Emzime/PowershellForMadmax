@@ -1,30 +1,33 @@
 # chia_plot [OPTION...]
 
 # -r, --threads arg     | Number of threads (default = 4)
-threads: 4
+threads: 
 # -u, --buckets arg     | Number of buckets (default = 256)
-buckets: 256
+buckets: 
 # -v, --buckets3 arg    | Number of buckets for phase 3+4 (default = buckets)
-buckets3: 256
-# -f, --farmerkey arg   | Your farmer key
+buckets3: 
+# -f, --farmerkey arg   | Your farmer key (48 bytes)
 farmerKey: 
-# -p, --poolkey arg     | Your pool key
+# -p, --poolkey arg     | Your pool key (48 bytes)
 poolKey: 
+# -c, --contract arg    | Pool Contract Address (64 chars)
+poolContract: 
 # -t, --tmpdir arg      | Your temporary path
 tmpDir: 
-# -2, --tmpdir2 arg     | Your temporary directory 2 / RAMDISK or nothing
+# -2, --tmpdir2 arg     | Your temporary directory 2 or RAMDISK or nothing
 tmpDir2: 
 # -d, --finaldir arg    | Optianal : Your Final disk letters for .plot, default is tmpDir directory
 finalDir:
-- F
-- E
-# Your madMax path
-chiaPlotterLoc: 
+- F:\Chia
+- F:\Pool
+- E:\
 # Enable creating log   | true/false
 logs: false
 # Enable moving log     | true/false
 logsMoved: false
 # -G, --tmptoggle       | Enable tmptoggle | Alternate tmpDir/tmpDir2 (default = false)
 tmpToggle: false
-# Optianal : Your logdir path, default is script folder
+# Optianal : Your logdir path, default is script folder | Example: C:\Documents\chiaLogs
 logDir: 
+# Your madMax path | Example: C:\Crypto\madMax v0.1.1
+chiaPlotterLoc: 

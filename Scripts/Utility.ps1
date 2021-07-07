@@ -1,4 +1,7 @@
-﻿# Intenationalization import
+﻿# Unblock file
+Unblock-File -Path $scriptDir
+
+# Intenationalization import
 $UTlang = Import-LocalizedData -BaseDirectory "Scripts\lang"
 
 # @Example $config['tmpDir'] = valPath -path $config['tmpDir']
@@ -131,14 +134,14 @@ Function MovePlots {
     $startMovePlots = new-object System.Diagnostics.ProcessStartInfo
     $startMovePlots.FileName = "$pshome\powershell.exe"
 
-    # Get plot name log
-    $newPlotLogName = $config["logDir"] + "Moved_" + $newPlotLogName.Substring(11,$newPlotLogName.Length-11) + ".log"
-
     # Log creation if logs are enabled
     if($config["logsMoved"])
     {
-        # Starts the creation of plots with logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
-        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy $($config["tmpDir"]) $finalSelectDisk *.plot /unilog:'$newPlotLogName' /tee /mov; sleep $sleepTime}"
+        # Get plot name log
+        $newPlotLogName = $config["logDir"] + "Moved_" + $newPlotLogName.Substring(11,$newPlotLogName.Length-11) + ".log"
+
+        # Starts the creation of plots with logs
+        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; robocopy $($config["tmpDir"]) $finalSelectDisk *.plot /unilog:'$newPlotLogName' /tee /mov; exit"
 
         # Display information
         PrintMsg -msg $UTlang.LogsInProgress -msg2 "$newPlotLogName" -blu $true
@@ -151,8 +154,8 @@ Function MovePlots {
     }
     else
     {
-        # Starts the creation of plots without logs (RESTE DES VARIABLES A AJOUTER TEMPDIR2 etc)
-        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; while ('$true') {robocopy $($config["tmpDir"]) $finalSelectDisk *.plot /mov; sleep $sleepTime}"
+        # Starts the creation of plots without logs
+        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; robocopy $($config["tmpDir"]) $finalSelectDisk *.plot /mov; exit"
         $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
     }
 
@@ -191,7 +194,14 @@ function CreatePlots {
         start-sleep -s $smallTime
 
         # Starts the creation of plots with logs
-        $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $config["poolKey"] --count 1 | tee "$newPlotLogName1" | Out-Default
+        if(!([string]::IsNullOrEmpty($config["poolContract"])))
+        {
+            $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --contract $($config["poolContract"]) --count 1 | tee "$newPlotLogName1" | Out-Default
+        }
+        else
+        {
+            $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $($config["poolKey"]) --count 1 | tee "$newPlotLogName1" | Out-Default
+        }
   
         # Get log name
         $plotName = Get-Content -Path "$newPlotLogName1" | where { $_ -match "plot-k32-"}
@@ -208,7 +218,14 @@ function CreatePlots {
         start-sleep -s $smallTime
 
         # Starts the creation of plots without logs
-        $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $config["poolKey"] --count 1 | Out-Default
+        if(!([string]::IsNullOrEmpty($config["poolContract"])))
+        {
+            $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --contract $($config["poolContract"]) --count 1 | Out-Default
+        }
+        else
+        {
+            $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $($config["poolKey"]) --count 1 | Out-Default
+        }
     }
 
     # Get process id
