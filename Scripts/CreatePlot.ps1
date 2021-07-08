@@ -17,13 +17,13 @@ Unblock-File -Path $scriptDir
 $scriptName = $MyInvocation.MyCommand.Name
 
 # File import
-Import-Module $scriptDir\PSYaml
+Import-Module $scriptDir\PSYaml | Unblock-File
 
 # Intenationalization import
 $CPlang = Import-LocalizedData -BaseDirectory "Scripts\Lang"
 
 # Importing functions
-."$scriptDir\Utility.ps1"
+."$scriptDir\Utility.ps1" | Unblock-File
 
 # Get config.yaml file
 [string[]]$fileContent = Get-Content "config.yaml"
@@ -52,12 +52,11 @@ if($config["logs"] -or $config["logsMoved"])
     if(!(Test-Path -Path $config["logDir"])){CreateFolder -folder $config["logDir"]}
     # Apply ValPath
     $config["logDir"] = ValPath -path $config["logDir"]
-    # Displays creation of the directory
-    PrintMsg -msg $CPlang.ValPathApply -msg2 "logDir"
+    $PrintMsgLogDir = "logDir |"
 }
      
 # Takes a break
-start-sleep -s $smallTime
+#start-sleep -s $smallTime
 
 # Check if tmpDir directory is specified
 if([string]::IsNullOrEmpty($config["tmpDir"]))
@@ -74,12 +73,11 @@ else
     if(!(Test-Path -Path $config["tmpDir"])){CreateFolder -folder $config["tmpDir"]}    
     # Apply ValPath
     $config["tmpDir"] = ValPath -path $config["tmpDir"]
-    # Displays creation of the directory
-    PrintMsg -msg $CPlang.ValPathApply -msg2 "tmpDir"
+    $PrintMsgTmpDir = "tmpDir |"
 }
 
 # Takes a break
-start-sleep -s $smallTime
+#start-sleep -s $smallTime
 
 # Set default tmpDir2 directory if not specified
 if([string]::IsNullOrEmpty($config["tmpDir2"]))
@@ -93,8 +91,7 @@ else
     if(!(Test-Path -Path $config["tmpDir2"])){CreateFolder -folder $config["tmpDir2"]}
     # Apply ValPath
     $config["tmpDir2"] = ValPath -path $config["tmpDir2"]
-    # Displays creation of the directory
-    PrintMsg -msg $CPlang.ValPathApply -msg2 "tmpDir2"
+    $PrintMsgTmpDir2 = "tmpDir2 |"
 }
 
 # Check if chiaPlotterLoc directory is specified
@@ -110,9 +107,11 @@ else
 {
     # Apply ValPath
     $config["chiaPlotterLoc"] = ValPath -path $config["chiaPlotterLoc"]
-    # Displays creation of the directory
-    PrintMsg -msg $CPlang.ValPathApply -msg2 "chiaPlotterLoc"
+    $PrintMsgChiaPlotterLoc = "chiaPlotterLoc"
 }
+
+# Display message for ValPath
+PrintMsg -msg $CPlang.ValPathApply ":$PrintMsgLogDir $PrintMsgTmpDir $PrintMsgTmpDir2$PrintMsgChiaPlotterLoc$PrintMsgTmpToggle"
 
 # Takes a break
 start-sleep -s $smallTime
@@ -121,7 +120,7 @@ start-sleep -s $smallTime
 if( ($config["tmpToggle"]) -AND (($config["tmpDir2"] -eq $config["tmpDir"])))
 {
     # Display information
-    PrintMsg -msg $CPlang.tmpToggleDeactivate
+    $PrintMsgTmpToggle = $CPlang.tmpToggleDeactivate
     # Turn off
     $config["tmpToggle"] = $false
     # Takes a break
@@ -130,27 +129,26 @@ if( ($config["tmpToggle"]) -AND (($config["tmpDir2"] -eq $config["tmpDir"])))
 elseif(!($config["tmpToggle"]))
 {
     # Display information
-    PrintMsg -msg $CPlang.tmpToggleFalse
+    $PrintMsgTmpToggle = $CPlang.tmpToggleFalse
     # Takes a break
     start-sleep -s $smallTime
 }
 else 
 {
     # Display information
-    PrintMsg -msg $CPlang.tmpToggleTrue
+    $PrintMsgTmpToggle = $CPlang.tmpToggleTrue
     # Takes a break
     start-sleep -s $smallTime
 }
 
+# Display message
+PrintMsg -msg $PrintMsgTmpToggle
+
+# Takes a break
+start-sleep -s $smallTime 
+
 # Get date and time conversion
-if(($PSCulture) -eq "fr-FR")
-{
-    $global:dateTime = $((get-date).ToLocalTime()).ToString("dd-MM-yyyy_HH'h'mm'm'ss")
-}
-else
-{
-    $global:dateTime = $((get-date).ToLocalTime()).ToString("yyyy-MM-dd_hh'h'mm'm'ss")
-}
+if(($PSCulture) -eq "fr-FR"){$global:dateTime = $((get-date).ToLocalTime()).ToString("dd-MM-yyyy_HH'h'mm'm'ss")}else{$global:dateTime = $((get-date).ToLocalTime()).ToString("yyyy-MM-dd_hh'h'mm'm'ss")}
 
 # Verification and allocation of disk space
 $finalSelectDisk = SelectDisk
@@ -186,6 +184,8 @@ if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
         start-sleep -s $smallTime
         # Modify attribut of folder
         $makeAttrib = (get-item "$folder" -Force).Attributes -= 'Hidden'
+        # Takes a break
+        start-sleep -s $smallTime
     } 
 
     # Apply ValPath

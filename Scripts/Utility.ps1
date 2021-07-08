@@ -10,16 +10,9 @@ Function ValPath {
         [Parameter(Mandatory=$true)]  [String]$path,
         [Parameter(Mandatory=$false)] [Bool]$isDir = $true
     )
-
     $path = $path -replace "/", "\"
-
     $lastChar = $path.Substring($path.Length - 1)
-
-    if($lastChar -NotLike "\" -And $isDir)
-    {
-        $path = "$($path)\"
-    }
-
+    if($lastChar -NotLike "\" -And $isDir){$path = "$($path)\"}
     return $path
 }
 
@@ -100,13 +93,13 @@ Function SelectDisk {
             PrintMsg -msg $UTlang.TestSpaceDisk
 
             # Takes a break
-            start-sleep -s $smallTime 
+            start-sleep -s $smallTime
 
             # Display letter
             PrintMsg -msg $UTlang.FinaleDiskUsed -msg2 "$($deviceLetter):\"
 
             # Takes a break
-            start-sleep -s $midTime 
+            start-sleep -s $smallTime
 
             # Display available capacity
             PrintMsg -msg $UTlang.FreeSpaceRemaining -msg2 $diskSpace -msg3 $UTlang.Gigaoctet
