@@ -90,7 +90,7 @@ if([string]::IsNullOrEmpty($config["tmpDir2"]))
 else 
 {
     # if directory not exist, create it
-    if(!(Test-Path -Path $config["tmpDir2"])){CreateFolder -folder $config["tmpDir2"]}    
+    if(!(Test-Path -Path $config["tmpDir2"])){CreateFolder -folder $config["tmpDir2"]}
     # Apply ValPath
     $config["tmpDir2"] = ValPath -path $config["tmpDir2"]
     # Displays creation of the directory
@@ -176,6 +176,26 @@ if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
     # Define resetting variables
     $resetTempDir   = $config["tmpDir"]
     $resetFinalDir  = $config["finalDir"]
+
+    # if directory not exist, create it
+    if(!(Test-Path -Path $finalSelectDisk))
+    {
+        # Create folder
+        CreateFolder -folder $finalSelectDisk
+        # Takes a break
+        start-sleep -s $smallTime
+        # Modify attribut of folder
+        $makeAttrib = (get-item "$folder" -Force).Attributes -= 'Hidden'
+    } 
+
+    # Apply ValPath
+    $config["tmpDir2"] = ValPath -path $finalSelectDisk
+
+    # Displays creation of the directory
+    PrintMsg -msg $CPlang.ValPathApply -msg2 "$finalSelectDisk"
+
+    # Takes a break
+    start-sleep -s $smallTime
 
     # Launch plot movement
     $movePlots = MovePlots -newPlotLogName $newPlotLogName -finalSelectDisk $finalSelectDisk
