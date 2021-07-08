@@ -18,9 +18,7 @@ tmpDir:
 tmpDir2: 
 # -d, --finaldir arg    | Optianal : Your Final disk letters for .plot, default is tmpDir directory
 finalDir:
-- F:\Chia
-- F:\Pool
-- E:\
+- 
 # Enable creating log   | true/false
 logs: false
 # Enable moving log     | true/false
