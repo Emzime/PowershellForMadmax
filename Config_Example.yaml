@@ -9,8 +9,8 @@ buckets: 256
 buckets3: 256
 # -f, --farmerkey arg   | Your farmer key (48 bytes)
 farmerKey: 1234sf56579vfsd846976164458712348
-# -p, --poolkey arg     | Your pool key (48 bytes)
-poolKey: 1234sf56579vfsd846976164458712348ssqrzfqsgsqd
+# -p, --poolkey arg     | Your pool key (48 bytes) | not used, use pool contract now
+#poolKey: 1234sf56579vfsd846976164458712348ssqrzfqsgsqd
 # -c, --contract arg    | Pool Contract Address (64 chars)
 poolContract: xchqdqfdqf532434315638
 # -t, --tmpdir arg      | Your temporary path
@@ -23,13 +23,13 @@ finalDir:
 - G:\MyPool
 - F:\
 - D:\AnotherPool
-# Your madMax path
-tmpToggle: false
-# Enable creating log   | true/false
-chiaPlotterLoc: C:\Crypto\madMax v0.1.1
-# Enable moving log     | true/false
-logs: false
 # -G, --tmptoggle       | Enable tmptoggle | Alternate tmpDir/tmpDir2 (default = false)
+tmpToggle: false
+# Your madMax path
+chiaPlotterLoc: C:\Crypto\madMax v0.1.1
+# Enable creating log   | true/false
+logs: false
+# Enable moving log     | true/false
 logsMoved: false
 # Optianal : Your logdir path, default is script folder
 logDir: 

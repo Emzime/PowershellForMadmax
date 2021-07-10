@@ -8,8 +8,8 @@ buckets:
 buckets3: 
 # -f, --farmerkey arg   | Your farmer key (48 bytes)
 farmerKey: 
-# -p, --poolkey arg     | Your pool key (48 bytes)
-poolKey: 
+# -p, --poolkey arg     | Your pool key (48 bytes) | not used, use pool contract now
+#poolKey: 
 # -c, --contract arg    | Pool Contract Address (64 chars)
 poolContract: 
 # -t, --tmpdir arg      | Your temporary path
