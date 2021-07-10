@@ -35,4 +35,4 @@ Voir: image
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-<center>![DisableProt](https://user-images.githubusercontent.com/3422040/125165342-d59b4980-e196-11eb-90cc-275f020a66ad.png)</center>
+![DisableProt](https://user-images.githubusercontent.com/3422040/125165342-d59b4980-e196-11eb-90cc-275f020a66ad.png)
