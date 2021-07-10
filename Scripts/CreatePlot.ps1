@@ -10,20 +10,17 @@ $Host.UI.RawUI.WindowTitle = "PowerShell For madMAx"
 # Get path file
 $global:scriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
 
-# Unblock file
-Unblock-File -Path $scriptDir
-
 # Search for the name of the script
 $scriptName = $MyInvocation.MyCommand.Name
 
 # File import
-Import-Module $scriptDir\PSYaml | Unblock-File
+Import-Module $scriptDir\PSYaml
 
 # Intenationalization import
 $CPlang = Import-LocalizedData -BaseDirectory "Scripts\Lang"
 
 # Importing functions
-."$scriptDir\Utility.ps1" | Unblock-File
+."$scriptDir\Utility.ps1"
 
 # Get config.yaml file
 [string[]]$fileContent = Get-Content "config.yaml"
@@ -54,9 +51,6 @@ if($config["logs"] -or $config["logsMoved"])
     $config["logDir"] = ValPath -path $config["logDir"]
     $PrintMsgLogDir = "logDir |"
 }
-     
-# Takes a break
-#start-sleep -s $smallTime
 
 # Check if tmpDir directory is specified
 if([string]::IsNullOrEmpty($config["tmpDir"]))
@@ -65,7 +59,7 @@ if([string]::IsNullOrEmpty($config["tmpDir"]))
     PrintMsg -msg $CPlang.PathTempNotFound -msg2 "-> tmpDir" -textColor "Red" -backColor "Black" -sharpColor "Red"
     PrintMsg -msg $CPlang.ClickToExit -textColor "Red" -backColor "Black" -sharpColor "Red"
     $input = Read-Host
-    exit
+    break
 }
 else 
 {
@@ -75,9 +69,6 @@ else
     $config["tmpDir"] = ValPath -path $config["tmpDir"]
     $PrintMsgTmpDir = "tmpDir |"
 }
-
-# Takes a break
-#start-sleep -s $smallTime
 
 # Set default tmpDir2 directory if not specified
 if([string]::IsNullOrEmpty($config["tmpDir2"]))
@@ -101,7 +92,7 @@ if([string]::IsNullOrEmpty($config["chiaPlotterLoc"]))
     PrintMsg -msg $CPlang.PathTempNotFound -msg2 "-> chiaPlotterLoc" -textColor "Red" -backColor "Black" -sharpColor "Red"
     PrintMsg -msg $CPlang.ClickToExit -textColor "Red" -backColor "Black" -sharpColor "Red"
     $input = Read-Host
-    exit
+    break
 }
 else 
 {
@@ -111,7 +102,7 @@ else
 }
 
 # Display message for ValPath
-PrintMsg -msg $CPlang.ValPathApply ":$PrintMsgLogDir $PrintMsgTmpDir $PrintMsgTmpDir2$PrintMsgChiaPlotterLoc$PrintMsgTmpToggle"
+PrintMsg -msg $CPlang.ValPathApply ":$PrintMsgLogDir $PrintMsgTmpDir $PrintMsgTmpDir2$PrintMsgChiaPlotterLoc"
 
 # Takes a break
 start-sleep -s $smallTime
@@ -123,23 +114,20 @@ if( ($config["tmpToggle"]) -AND (($config["tmpDir2"] -eq $config["tmpDir"])))
     $PrintMsgTmpToggle = $CPlang.tmpToggleDeactivate
     # Turn off
     $config["tmpToggle"] = $false
-    # Takes a break
-    start-sleep -s $midTime
 }
 elseif(!($config["tmpToggle"]))
 {
     # Display information
     $PrintMsgTmpToggle = $CPlang.tmpToggleFalse
-    # Takes a break
-    start-sleep -s $smallTime
 }
 else 
 {
     # Display information
     $PrintMsgTmpToggle = $CPlang.tmpToggleTrue
-    # Takes a break
-    start-sleep -s $smallTime
 }
+
+# Takes a break
+start-sleep -s $smallTime
 
 # Display message
 PrintMsg -msg $PrintMsgTmpToggle
@@ -217,19 +205,6 @@ if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
 
     # Display information
     PrintMsg -msg $CPlang.ResetVariables
-
-    # Takes a break
-    start-sleep -s $smallTime
-
-    # Checks if the copy process is running and allocates double the space for the next plot
-    If (Get-Process -Name "Robocopy" -ErrorAction "silentlycontinue")
-    {
-        $global:requiredSpace = 204
-    }
-    else
-    {
-        $global:requiredSpace = 102
-    }
 
     # Takes a break
     start-sleep -s $midTime
