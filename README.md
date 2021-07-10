@@ -7,8 +7,6 @@ free storage drives for creating <a href="https://www.chia.net/" target="_blank"
 
 # <u>Installation</u>
 Extract the folder where you want, fill in the config.yaml file and then double click "Run.bat"<br>
-If the script warns you that the scripts cannot be executed on your computer, right click on "ExecutionPolicy.ps1" and "execute with powershell".<br>
-Close the window and restart "Run.bat"<br>
 All you have to do is wait until your disks are full
 
 # <u>Windows Protection</u>
@@ -25,8 +23,6 @@ libre des disques de stockage pour la création de <a href="https://www.chia.net
 
 # <u>Installation</u>
 Extrayez le dossier où vous voulez, remplissez le fichier config.yaml puis double-cliquez sur "Run.bat"<br>
-Si le script vous averti que les scripts ne peuvent pas être exécuter sur votre ordinateur, faîtes un clic droit sur "ExecutionPolicy.ps1" et "exécuter avec powershell"<br>
-Fermer la fenêtre puis relancer Run.bat<br>
 Il ne vous reste plus qu'à attendre que vos disques soient plein.
 
 # <u>Windows Protection</u>
