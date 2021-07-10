@@ -186,11 +186,11 @@ function CreatePlots {
         # Starts the creation of plots with logs
         if(!([string]::IsNullOrEmpty($config["poolContract"])))
         {
-            $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" -k 33 --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --contract $($config["poolContract"]) --count 1 | tee "$newPlotLogName1" | Out-Default
+            $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --contract $($config["poolContract"]) --count 1 | tee "$newPlotLogName1" | Out-Default
         }
         else
         {
-            $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" -k 33 --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $($config["poolKey"]) --count 1 | tee "$newPlotLogName1" | Out-Default
+            $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $($config["poolKey"]) --count 1 | tee "$newPlotLogName1" | Out-Default
         }
   
         # Get log name
