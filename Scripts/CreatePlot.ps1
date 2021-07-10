@@ -13,6 +13,26 @@ $global:scriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
 # Search for the name of the script
 $scriptName = $MyInvocation.MyCommand.Name
 
+# Get policy
+$GetExecutionPolicy = Get-ExecutionPolicy
+
+# Set policy
+$checkExecutionPolicy = "Unrestricted"
+
+# Check if policy is Unrestricted
+if(!([string]$GetExecutionPolicy -eq [string]$checkExecutionPolicy))
+{
+    $currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
+    $testadmin = $currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+    if ($testadmin -eq $false)
+    {
+        Start-Process powershell.exe -windowstyle hidden -Verb RunAs -ArgumentList ('-noprofile -noexit -file "{0}" -elevated' -f ($myinvocation.MyCommand.Definition))
+        $setEx = Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -force
+    }
+}
+# Takes a break
+start-sleep -s 2
+
 # File import
 Import-Module $scriptDir\PSYaml
 
