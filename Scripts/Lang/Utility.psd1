@@ -9,4 +9,6 @@
     ProcessID = Process id:
     LaunchCreatePlot = Launching the creation...
     TempDirCreated = Directory created
+    DiskNotExist = You have assigned the
+    DiskNotExist2 = drive in the configuration but it does not
 "@

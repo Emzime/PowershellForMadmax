@@ -9,4 +9,6 @@
     ProcessID = id du processus:
     LaunchCreatePlot = Lancement de la création...
     TempDirCreated = Répertoire créé
+    DiskNotExist2 = dans la config mais il n'existe pas
+    DiskNotExist = Tu as attribué le disque
 "@
