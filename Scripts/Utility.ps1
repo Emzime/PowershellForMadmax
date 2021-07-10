@@ -74,40 +74,50 @@ Function SelectDisk {
         # Get letters from final disk with folder
         $deviceLetter = $_.Substring(0,1)
 
-        # We query the selected hard drives
-        $diskSpace = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='$($deviceLetter):'" | Select-Object FreeSpace
-
-        # Defines space in Gio
-        $diskSpace = [int] [math]::Round($diskSpace.FreeSpace / 1073741824)
-
-        # Check which disk is available
-        if ($diskSpace -ge $requiredSpace)
+        if(Test-Path -Path "$($deviceLetter):")
         {
-            # Takes a break
-            start-sleep -s $smallTime
+            # We query the selected hard drives
+            $diskSpace = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='$($deviceLetter):'" | Select-Object FreeSpace
 
+            # Defines space in Gio
+            $diskSpace = [int] [math]::Round($diskSpace.FreeSpace / 1073741824)
+
+            # Check which disk is available
+            if ($diskSpace -ge $requiredSpace)
+            {
+                # Takes a break
+                start-sleep -s $smallTime
+
+                # Display letter
+                PrintMsg -msg $UTlang.TestSpaceDisk
+
+                # Takes a break
+                start-sleep -s $smallTime
+
+                # Display letter
+                PrintMsg -msg $UTlang.FinaleDiskUsed -msg2 "$($deviceLetter):\"
+
+                # Takes a break
+                start-sleep -s $smallTime
+
+                # Display available capacity
+                PrintMsg -msg $UTlang.FreeSpaceRemaining -msg2 $diskSpace -msg3 $UTlang.Gigaoctet
+
+                # Takes a break
+                start-sleep -s $smallTime
+
+                # Return hard disk letter
+                return $_
+            
+                # Stop if space available
+                break
+            }
+        }
+        else 
+        {
             # Display letter
-            PrintMsg -msg $UTlang.TestSpaceDisk
-
-            # Takes a break
-            start-sleep -s $smallTime
-
-            # Display letter
-            PrintMsg -msg $UTlang.FinaleDiskUsed -msg2 "$($deviceLetter):\"
-
-            # Takes a break
-            start-sleep -s $smallTime
-
-            # Display available capacity
-            PrintMsg -msg $UTlang.FreeSpaceRemaining -msg2 $diskSpace -msg3 $UTlang.Gigaoctet
-
-            # Takes a break
-            start-sleep -s $smallTime
-
-            # Return hard disk letter
-            return $_
-        
-            # Stop if space available
+            PrintMsg -msg $UTlang.DiskNotExist -msg2 "$($deviceLetter):\" -msg3 $UTlang.DiskNotExist2 -textColor "Red" -backColor "Black" -sharpColor "Red"
+            $input = Read-Host
             break
         }
     }
