@@ -1,5 +1,4 @@
 # chia_plot [OPTION...]
-#-w, --waitforcopy | Wait for copy to start next plot
 
 # -r, --threads arg     | Number of threads (default = 4)
 threads: 6
@@ -31,5 +30,3 @@ chiaPlotterLoc: C:\Crypto\madMax v0.1.1
 logs: false
 # Enable moving log     | true/false
 logsMoved: false
-# Optianal : Your logdir path, default is script folder
-logDir: 
