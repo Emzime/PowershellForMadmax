@@ -12,6 +12,8 @@ farmerKey:
 #poolKey: 
 # -c, --contract arg    | Pool Contract Address (64 chars)
 poolContract: 
+# Your madMax path | Example: C:\Crypto\madMax v0.1.1
+chiaPlotterLoc: 
 # -t, --tmpdir arg      | Your temporary path
 tmpDir: 
 # -2, --tmpdir2 arg     | Your temporary directory 2 or RAMDISK or nothing
@@ -25,7 +27,3 @@ logs: false
 logsMoved: false
 # -G, --tmptoggle       | Enable tmptoggle | Alternate tmpDir/tmpDir2 (default = false)
 tmpToggle: false
-# Optianal : Your logdir path, default is script folder | Example: C:\Documents\chiaLogs
-logDir: 
-# Your madMax path | Example: C:\Crypto\madMax v0.1.1
-chiaPlotterLoc: 

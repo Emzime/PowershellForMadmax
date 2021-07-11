@@ -20,18 +20,17 @@ $GetExecutionPolicy = Get-ExecutionPolicy
 $checkExecutionPolicy = "Unrestricted"
 
 # Check if policy is Unrestricted
-if(!([string]$GetExecutionPolicy -eq [string]$checkExecutionPolicy))
-{
+if(!([string]$GetExecutionPolicy -eq "$checkExecutionPolicy")){
     $currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
     $testadmin = $currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
-    if ($testadmin -eq $false)
-    {
+    if ($testadmin -eq $false){
         Start-Process powershell.exe -windowstyle hidden -Verb RunAs -ArgumentList ('-noprofile -noexit -file "{0}" -elevated' -f ($myinvocation.MyCommand.Definition))
         $setEx = Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -force
     }
 }
+
 # Takes a break
-start-sleep -s 2
+start-sleep -s 1
 
 # File import
 Import-Module $scriptDir\PSYaml
@@ -42,10 +41,13 @@ $CPlang = Import-LocalizedData -BaseDirectory "Scripts\Lang"
 # Importing functions
 ."$scriptDir\Utility.ps1"
 
+# Check script version
+CheckNewPackageVersion
+
 # Get config.yaml file
 [string[]]$fileContent = Get-Content "config.yaml"
 $content = ''
-foreach ($line in $fileContent) { $content = $content + "`n" + $line }
+foreach ($line in $fileContent){ $content = $content + "`n" + $line }
 
 # Convert config.yaml
 $global:config = ConvertFrom-YAML $content
@@ -56,92 +58,37 @@ $global:smallTime = 1
 $global:midTime = 3
 $global:bigTime = 5
 
-# Set default logDir directory if not specified
-if($config["logs"] -or $config["logsMoved"])
-{
-    # if logdir not empty
-    if([string]::IsNullOrEmpty($config["logDir"]))
-    {
-        # 8 char for remove "\Scripts" and add "\logs"
-        $config["logDir"] = $scriptDir.Substring(0,$scriptDir.Length-8) + "\logs"
-    }
-    # if directory not exist, create it
-    if(!(Test-Path -Path $config["logDir"])){CreateFolder -folder $config["logDir"]}
-    # Apply ValPath
-    $config["logDir"] = ValPath -path $config["logDir"]
-    $PrintMsgLogDir = "logDir |"
-}
-
-# Check if tmpDir directory is specified
-if([string]::IsNullOrEmpty($config["tmpDir"]))
-{
-    # Information
-    PrintMsg -msg $CPlang.PathTempNotFound -msg2 "-> tmpDir" -textColor "Red" -backColor "Black" -sharpColor "Red"
-    PrintMsg -msg $CPlang.ClickToExit -textColor "Red" -backColor "Black" -sharpColor "Red"
-    $input = Read-Host
-    break
-}
-else 
-{
-    # if directory not exist, create it
-    if(!(Test-Path -Path $config["tmpDir"])){CreateFolder -folder $config["tmpDir"]}    
-    # Apply ValPath
-    $config["tmpDir"] = ValPath -path $config["tmpDir"]
-    $PrintMsgTmpDir = "tmpDir |"
-}
-
 # Set default tmpDir2 directory if not specified
-if([string]::IsNullOrEmpty($config["tmpDir2"]))
-{
-    # Set default tmpDir2 directory
-    $config["tmpDir2"] = $config["tmpDir"]
-}
-else 
-{
-    # if directory not exist, create it
-    if(!(Test-Path -Path $config["tmpDir2"])){CreateFolder -folder $config["tmpDir2"]}
-    # Apply ValPath
-    $config["tmpDir2"] = ValPath -path $config["tmpDir2"]
-    $PrintMsgTmpDir2 = "tmpDir2 |"
-}
+if([string]::IsNullOrEmpty($config["tmpDir2"])){$config["tmpDir2"] = $config["tmpDir"]}
 
-# Check if chiaPlotterLoc directory is specified
-if([string]::IsNullOrEmpty($config["chiaPlotterLoc"]))
-{
-    # Information
-    PrintMsg -msg $CPlang.PathTempNotFound -msg2 "-> chiaPlotterLoc" -textColor "Red" -backColor "Black" -sharpColor "Red"
-    PrintMsg -msg $CPlang.ClickToExit -textColor "Red" -backColor "Black" -sharpColor "Red"
-    $input = Read-Host
-    break
-}
-else 
-{
-    # Apply ValPath
-    $config["chiaPlotterLoc"] = ValPath -path $config["chiaPlotterLoc"]
-    $PrintMsgChiaPlotterLoc = "chiaPlotterLoc"
-}
+# Set log folder
+if($config["logs"] -or $config["logsMoved"]){$config["logDir"] = $scriptDir.Substring(0,$scriptDir.Length-8) + "\logs\"}
 
-# Display message for ValPath
-PrintMsg -msg $CPlang.ValPathApply ":$PrintMsgLogDir $PrintMsgTmpDir $PrintMsgTmpDir2$PrintMsgChiaPlotterLoc"
+# Check if config is ok
+CheckConfig -path $config["threads"] -line "threads"
+CheckConfig -path $config["buckets"] -line "buckets"
+CheckConfig -path $config["farmerKey"] -line "farmerKey"
+CheckConfig -path $config["poolContract"] -line "poolContract"
+CheckConfig -path $config["tmpDir"] -line "tmpDir"
+CheckConfig -path $config["tmpDir2"] -line "tmpDir2"
+CheckConfig -path $config["finalDir"] -line "finalDir"
+CheckConfig -path $config["chiaPlotterLoc"] -line "chiaPlotterLoc"
 
 # Takes a break
 start-sleep -s $smallTime
 
 # Set tmptoggle if active and tmpDir2 ative
-if( ($config["tmpToggle"]) -AND (($config["tmpDir2"] -eq $config["tmpDir"])))
-{
+if( ($config["tmpToggle"]) -AND (($config["tmpDir2"] -eq $config["tmpDir"]))){
     # Display information
     $PrintMsgTmpToggle = $CPlang.tmpToggleDeactivate
     # Turn off
     $config["tmpToggle"] = $false
 }
-elseif(!($config["tmpToggle"]))
-{
+elseif(!($config["tmpToggle"])){
     # Display information
     $PrintMsgTmpToggle = $CPlang.tmpToggleFalse
 }
-else 
-{
+else{
     # Display information
     $PrintMsgTmpToggle = $CPlang.tmpToggleTrue
 }
@@ -162,8 +109,7 @@ if(($PSCulture) -eq "fr-FR"){$global:dateTime = $((get-date).ToLocalTime()).ToSt
 $finalSelectDisk = SelectDisk
 
 # stop if there is no more space
-if(!($finalSelectDisk))
-{
+if(!($finalSelectDisk)){
     PrintMsg -msg $CPlang.FreeSpaceFull -textColor "Red" -backColor "Black" -sharpColor "Red"
     PrintMsg -msg $CPlang.ClickToExit -textColor "Red" -backColor "Black" -sharpColor "Red"
     $input = Read-Host
@@ -177,15 +123,13 @@ $newPlotLogName = CreatePlots
 start-sleep -s $midTime
 
 # Check if chia_plot process is running
-if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
-{
+if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue")){
     # Define resetting variables
     $resetTempDir   = $config["tmpDir"]
     $resetFinalDir  = $config["finalDir"]
 
     # if directory not exist, create it
-    if(!(Test-Path -Path $finalSelectDisk))
-    {
+    if(!(Test-Path -Path $finalSelectDisk)){
         # Create folder
         CreateFolder -folder $finalSelectDisk
         # Takes a break
