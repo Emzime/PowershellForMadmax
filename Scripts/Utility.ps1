@@ -39,8 +39,7 @@ Function PrintMsg {
     }
     elseif($msg3){
         $charCount = ($msg.Length + 2) + ($msg2.Length + 1) + ($msg3.Length + 1)
-    }
-    else{
+    }else{
         $charCount = ($msg.Length + 2) + ($msg2.Length) + ($msg3.Length)
     }
     # Count number of #
@@ -87,8 +86,7 @@ Function SelectDisk {
                 # Stop if space available
                 break
             }
-        }
-        else{
+        }else{
             # Display letter
             PrintMsg -msg $UTlang.DiskNotExist -msg2 "$($deviceLetter):\" -msg3 $UTlang.DiskNotExist2 -textColor "Red" -backColor "Black" -sharpColor "Red"
             $input = Read-Host
@@ -118,8 +116,7 @@ Function MovePlots {
         start-sleep -s $smallTime
         # Starts the creation
         $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
-    }
-    else{
+    }else{
         # Starts the creation of plots without logs
         $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; robocopy $($config["tmpDir"]) $finalSelectDisk *.plot /mov; exit"
         $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
@@ -151,8 +148,7 @@ function CreatePlots {
         # Starts the creation of plots without logs
         if(!([string]::IsNullOrEmpty($config["poolContract"]))){
             $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --contract $($config["poolContract"]) --count 1 | tee "$newPlotLogName1" | Out-Default
-        }
-        else{
+        }else{
             $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $($config["poolKey"]) --count 1 | tee "$newPlotLogName1" | Out-Default
         }  
         # Get log name
@@ -161,15 +157,13 @@ function CreatePlots {
         $newPlotLogName2 = $config["logDir"] + "Create_" + $plotName.Substring(11,$plotName.Length-11) + ".log"
         # Rename log with plot name
         $renameCreatedLog = Rename-Item -Path "$newPlotLogName1" -NewName "$newPlotLogName2"
-    }
-    else{
+    }else{
         # Takes a break
         start-sleep -s $smallTime
         # Starts the creation of plots without logs
         if(!([string]::IsNullOrEmpty($config["poolContract"]))){
             $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --contract $($config["poolContract"]) --count 1 | Out-Default
-        }
-        else{
+        }else{
             $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $($config["poolKey"]) --count 1 | Out-Default
         }
     }
