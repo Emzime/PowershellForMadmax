@@ -62,7 +62,12 @@ $global:bigTime = 5
 if([string]::IsNullOrEmpty($config["tmpDir2"])){$config["tmpDir2"] = $config["tmpDir"]}
 
 # Set log folder
-if($config["logs"] -or $config["logsMoved"]){$config["logDir"] = $scriptDir.Substring(0,$scriptDir.Length-8) + "\logs\"}
+if($config["logs"] -or $config["logsMoved"]){
+    $config["logDir"] = $scriptDir.Substring(0,$scriptDir.Length-8) + "\logs\"
+    if(!(Test-Path $config["logDir"])){
+        $addFolder = New-Item -ItemType Directory -Force -Path $config["logDir"]
+    }
+}
 
 # Check if config is ok
 CheckConfig -path $config["threads"] -line "threads"
