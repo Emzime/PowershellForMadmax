@@ -1,4 +1,4 @@
-# Intenationalization import
+﻿# Intenationalization import
 $UTlang = Import-LocalizedData -BaseDirectory "Scripts\lang"
 
 # @Example $config['tmpDir'] = valPath -path $config['tmpDir']
