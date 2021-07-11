@@ -1,0 +1,34 @@
+# <u>Update</u>
+07/07/2021 - Update for the creation of compatible plots new pool protocol
+
+# <u>What it does</u>
+Powershell script usable for <a href="https://github.com/stotiks/chia-plotter/releases" target="_blank" />madMax v0.1.1 chia plotter Windows version</a> that manages the space<br>
+free storage drives for creating <a href="https://www.chia.net/" target="_blank" />Chia Network</a>.
+
+# <u>Installation</u>
+Extract the folder where you want, fill in the config.yaml file and then double click "Run.bat"<br>
+All you have to do is wait until your disks are full
+
+# <u>Windows Protection</u>
+Having some execution problem with some windows pro version, please right click on the ZIP file, go to property and check the Unblock box<br> 
+See: image
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+# <u>Mise à jour</u>
+07/07/2021 - Mise à jour pour la création des plots compatibles nouveau protocol de pool
+
+# <u>Ce qu'il fait</u>
+Script Powershell utilisable pour <a href="https://github.com/stotiks/chia-plotter/releases" target="_blank" />madMax v0.1.1 chia plotter version Windows</a> qui gère l'espace<br> 
+libre des disques de stockage pour la création de <a href="https://www.chia.net/" target="_blank" />Chia Network</a>.
+
+# <u>Installation</u>
+Extrayez le dossier où vous voulez, remplissez le fichier config.yaml puis double-cliquez sur "Run.bat"<br>
+Il ne vous reste plus qu'à attendre que vos disques soient plein.
+
+# <u>Windows Protection</u>
+Ayant certain problème d'exécution avec quelques windows version pro, veuillez faire un clique droit sur le fichier ZIP, aller dans propriété et cochez la case Débloquer<br>
+Voir: image
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+![DisableProt](https://user-images.githubusercontent.com/3422040/125165342-d59b4980-e196-11eb-90cc-275f020a66ad.png)
