@@ -1,5 +1,5 @@
 # <u>Update</u>
-07/07/2021 - Update for the creation of compatible plots new pool protocol
+11/07/2021 - Add version checking | Add config check
 
 # <u>What it does</u>
 Powershell script usable for <a href="https://github.com/stotiks/chia-plotter/releases" target="_blank" />madMax v0.1.1 chia plotter Windows version</a> that manages the space<br>
