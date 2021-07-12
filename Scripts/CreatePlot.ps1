@@ -148,10 +148,7 @@ if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue")){
         $makeAttrib = (get-item "$folder" -Force).Attributes -= 'Hidden'
         # Takes a break
         start-sleep -s $smallTime
-    } 
-
-    # Apply ValPath
-    $config["tmpDir2"] = ValPath -path $finalSelectDisk
+    }
 
     # Displays creation of the directory
     PrintMsg -msg $CPlang.ValPathApply -msg2 "$finalSelectDisk"
