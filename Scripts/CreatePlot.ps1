@@ -57,9 +57,14 @@ $global:sleepTime = 300
 $global:smallTime = 1
 $global:midTime = 3
 $global:bigTime = 5
+$global:winHeight = 10
+$global:winWidth  = 220
 
 # Set default tmpDir2 directory if not specified
-if([string]::IsNullOrEmpty($config["tmpDir2"])){$config["tmpDir2"] = $config["tmpDir"]}
+if([string]::IsNullOrEmpty($config["tmpDir2"])){
+    $config["tmpDir2"] = $config["tmpDir"]
+    $config["tmpDir2"] = ValPath -path $config["tmpDir2"]
+}
 
 # Set log folder
 if($config["logs"] -or $config["logsMoved"]){
