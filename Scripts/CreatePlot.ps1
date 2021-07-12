@@ -150,9 +150,6 @@ if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue")){
         start-sleep -s $smallTime
     } 
 
-    # Apply ValPath
-    $config["tmpDir2"] = ValPath -path $finalSelectDisk
-
     # Displays creation of the directory
     PrintMsg -msg $CPlang.ValPathApply -msg2 "$finalSelectDisk"
 
