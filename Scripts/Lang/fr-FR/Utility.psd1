@@ -1,4 +1,5 @@
-﻿ConvertFrom-StringData @"
+ConvertFrom-StringData @"
+    ValPathApply = ValPath appliqué à
     SpaceRequire = Remarque: l'espace requis est de
     Gigaoctet = Go
     TestSpaceDisk = Recherche de l'espace disponible...

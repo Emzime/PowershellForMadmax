@@ -1,4 +1,4 @@
-﻿ConvertFrom-StringData @"
+ConvertFrom-StringData @"
     ValPathApply = ValPath appliqué à
     PathTempNotFound = Tu n'as pas rempli correctement le fichier config.yaml
     ClickToExit = Appuyez sur ENTREE pour quitter...

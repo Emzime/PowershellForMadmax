@@ -1,4 +1,4 @@
-﻿ConvertFrom-StringData @"
+ConvertFrom-StringData @"
     ValPathApply = ValPath applied to
     PathTempNotFound = You didn't give a path for the temporary files
     ClickToExit = Press ENTER to exit...

@@ -20,10 +20,12 @@ $GetExecutionPolicy = Get-ExecutionPolicy
 $checkExecutionPolicy = "Unrestricted"
 
 # Check if policy is Unrestricted
-if(!([string]$GetExecutionPolicy -eq "$checkExecutionPolicy")){
+if(!([string]$GetExecutionPolicy -eq "$checkExecutionPolicy"))
+{
     $currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
     $testadmin = $currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
-    if ($testadmin -eq $false){
+    if ($testadmin -eq $false)
+    {
         Start-Process powershell.exe -windowstyle hidden -Verb RunAs -ArgumentList ('-noprofile -noexit -file "{0}" -elevated' -f ($myinvocation.MyCommand.Definition))
         $setEx = Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -force
     }
@@ -61,16 +63,19 @@ $global:winHeight = 10
 $global:winWidth  = 220
 
 # Set default tmpDir2 directory if not specified
-if([string]::IsNullOrEmpty($config["tmpDir2"])){
+if([string]::IsNullOrEmpty($config["tmpDir2"]))
+{
     $config["tmpDir2"] = $config["tmpDir"]
     $config["tmpDir2"] = ValPath -path $config["tmpDir2"]
 }
 
 # Set log folder
-if($config["logs"] -or $config["logsMoved"]){
+if($config["logs"] -or $config["logsMoved"])
+{
     $config["logDir"] = $scriptDir.Substring(0,$scriptDir.Length-8) + "\logs\"
-    if(!(Test-Path $config["logDir"])){
-        $addFolder = New-Item -ItemType Directory -Force -Path $config["logDir"]
+    if(!(Test-Path $config["logDir"]))
+    {
+        CreateFolder -folder $config["logDir"]
     }
 }
 
@@ -88,17 +93,20 @@ CheckConfig -path $config["chiaPlotterLoc"] -line "chiaPlotterLoc"
 start-sleep -s $smallTime
 
 # Set tmptoggle if active and tmpDir2 ative
-if( ($config["tmpToggle"]) -AND (($config["tmpDir2"] -eq $config["tmpDir"]))){
+if( ($config["tmpToggle"]) -AND (($config["tmpDir2"] -eq $config["tmpDir"])))
+{
     # Display information
     $PrintMsgTmpToggle = $CPlang.tmpToggleDeactivate
     # Turn off
     $config["tmpToggle"] = $false
 }
-elseif(!($config["tmpToggle"])){
+elseif(!($config["tmpToggle"]))
+{
     # Display information
     $PrintMsgTmpToggle = $CPlang.tmpToggleFalse
 }
-else{
+else
+{
     # Display information
     $PrintMsgTmpToggle = $CPlang.tmpToggleTrue
 }
@@ -119,7 +127,8 @@ if(($PSCulture) -eq "fr-FR"){$global:dateTime = $((get-date).ToLocalTime()).ToSt
 $finalSelectDisk = SelectDisk
 
 # stop if there is no more space
-if(!($finalSelectDisk)){
+if(!($finalSelectDisk))
+{
     PrintMsg -msg $CPlang.FreeSpaceFull -textColor "Red" -backColor "Black" -sharpColor "Red"
     PrintMsg -msg $CPlang.ClickToExit -textColor "Red" -backColor "Black" -sharpColor "Red"
     $input = Read-Host
@@ -133,22 +142,23 @@ $newPlotLogName = CreatePlots
 start-sleep -s $midTime
 
 # Check if chia_plot process is running
-if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue")){
+if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
+{
     # Define resetting variables
     $resetTempDir   = $config["tmpDir"]
     $resetFinalDir  = $config["finalDir"]
 
     # if directory not exist, create it
-    if(!(Test-Path -Path $finalSelectDisk)){
+    if(!(Test-Path -Path $finalSelectDisk))
+    {
         # Create folder
         CreateFolder -folder $finalSelectDisk
         # Takes a break
         start-sleep -s $smallTime
-        # Modify attribut of folder
-        $makeAttrib = (get-item "$folder" -Force).Attributes -= 'Hidden'
-        # Takes a break
-        start-sleep -s $smallTime
     }
+
+    # Apply valpath
+    $finalSelectDisk = ValPath -path $finalSelectDisk
 
     # Displays creation of the directory
     PrintMsg -msg $CPlang.ValPathApply -msg2 "$finalSelectDisk"
