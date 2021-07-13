@@ -140,7 +140,6 @@ $newPlotLogName = CreatePlots
 
 # Takes a break
 start-sleep -s $midTime
-
 # Check if chia_plot process is running
 if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
 {
@@ -160,14 +159,14 @@ if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
     # Apply valpath
     $finalSelectDisk = ValPath -path $finalSelectDisk
 
-    # Displays creation of the directory
-    PrintMsg -msg $CPlang.ValPathApply -msg2 "$finalSelectDisk"
-
     # Takes a break
     start-sleep -s $smallTime
 
     # Launch plot movement
     $movePlots = MovePlots -newPlotLogName $newPlotLogName -finalSelectDisk $finalSelectDisk
+
+    # Displays creation of the directory
+    PrintMsg -msg $CPlang.ValPathApply -msg2 "$finalSelectDisk"
 
     # Takes a break
     start-sleep -s $smallTime

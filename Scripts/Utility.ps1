@@ -114,13 +114,18 @@ Function MovePlots {
     # Starts the move window if the process does not exist
     $startMovePlots = new-object System.Diagnostics.ProcessStartInfo
     $startMovePlots.FileName = "$pshome\powershell.exe"
+
+    # Get plot Name
+    $newPlotNamePath = "$finalSelectDisk$newPlotLogName"
+    $newPlotName = $newPlotNamePath.Substring(0, $newPlotNamePath.Length-9)
+
     # Log creation if logs are enabled
     if($config["logsMoved"])
     {
         # Get plot name log
         $newPlotLogName = $config["logDir"] + "Moved_" + $newPlotLogName.Substring(11,$newPlotLogName.Length-11) + ".log"
         # Starts the creation of plots with logs
-        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; robocopy $($config["tmpDir"]) $finalSelectDisk *.plot /unilog:'$newPlotLogName' /tee /mov; exit"
+         $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; robocopy $($config["tmpDir"]) $finalSelectDisk *.plotTEMP /unilog:'$newPlotLogName' /tee /mov; rename-item -path '$finalSelectDisk$newPlotLogName' -NewName '$newPlotName.plot'; exit"
         # Display information
         PrintMsg -msg $UTlang.LogsInProgress -msg2 "$newPlotLogName" -blu $true
         # Takes a break
@@ -131,7 +136,8 @@ Function MovePlots {
     else
     {
         # Starts the creation of plots without logs
-        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; robocopy $($config["tmpDir"]) $finalSelectDisk *.plot /mov; exit"
+        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; robocopy $($config["tmpDir"]) $finalSelectDisk *.plotTEMP /mov; rename-item -path '$finalSelectDisk$newPlotLogName' -NewName '$newPlotName.plot'; exit"
+        # Starts the creation
         $processMovePlots = [Diagnostics.Process]::Start($startMovePlots)
     }
     # Takes a break
@@ -167,7 +173,7 @@ function CreatePlots {
         else
         {
             $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $($config["poolKey"]) --count 1 | tee "$newPlotLogName1" | Out-Default
-        }  
+        }
         # Get log name
         $plotName = Get-Content -Path "$newPlotLogName1" | where { $_ -match "plot-k32-"}
         # Plot log name
@@ -188,7 +194,12 @@ function CreatePlots {
         {
             $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $($config["poolKey"]) --count 1 | Out-Default
         }
+
+        # Get log name
+        $plotReName = get-childitem -Path $($config["tmpDir"]) *.plot | rename-item -NewName {$_.name -replace '.plot','.plotTEMP'}
+        $plotName = get-childitem -Path $($config["tmpDir"]) *.plotTEMP
     }
+
     # Get process id
     return $plotName
 }
