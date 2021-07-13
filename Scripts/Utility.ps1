@@ -297,7 +297,8 @@ Function CheckNewPackageVersion {
         # Exit if Ok is clicked
         if ($msgUpd2 -eq "Ok")
         {
-            Exit $LASTEXITCODE
+            Start-Process "https://github.com/Maxxxi/PowershellForMadmax/releases/tag/$tagID"
+            exit $LASTEXITCODE
         }
     }
 }
