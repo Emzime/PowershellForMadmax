@@ -1,5 +1,5 @@
 # <u>Update</u>
-11/07/2021 - Adding a version check | Adding a config file check
+13/07/2021 - rename the plot before moving it to avoid displaying invalid plots in the Chia interface
 
 # <u>What it does</u>
 Powershell script usable for <a href="https://github.com/stotiks/chia-plotter/releases" target="_blank" />madMax v0.1.1 chia plotter Windows version</a> that manages the space<br>
@@ -15,7 +15,7 @@ See: image
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 # <u>Mise à jour</u>
-11/07/2021 - Ajout d'une vérification de la version | Ajout d'une vérification du fichier config
+13/07/2021 - renomme le plot avant de le déplacer pour éviter l'affichage de plots invalides dans l'interface Chia
 
 # <u>Ce qu'il fait</u>
 Script Powershell utilisable pour <a href="https://github.com/stotiks/chia-plotter/releases" target="_blank" />madMax v0.1.1 chia plotter version Windows</a> qui gère l'espace<br> 
