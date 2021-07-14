@@ -163,7 +163,15 @@ if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
     start-sleep -s $smallTime
 
     # Launch plot movement
-    $movePlots = MovePlots -newPlotLogName $newPlotLogName -finalSelectDisk $finalSelectDisk
+    if(Test-Path -path $newPlotLogName)
+    {
+        $movePlots = MovePlots -newPlotLogName $newPlotLogName -finalSelectDisk $finalSelectDisk
+    }
+    else 
+    {
+        PrintMsg -msg $CPlang.NotWorking -blu $true -textColor "Red" -backColor "Black" -sharpColor "Red"
+        break    
+    }
 
     # Displays creation of the directory
     PrintMsg -msg $CPlang.ValPathApply -msg2 "$finalSelectDisk"

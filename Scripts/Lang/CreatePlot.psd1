@@ -9,4 +9,5 @@ ConvertFrom-StringData @"
     ProcessID = id du processus:
     ResetVariablesInProgress = Reset of current variables...
     ResetVariables = Variables tmpDir and finalDir have been successfully reset
+    NotWorking = The script stopped because an error occurred
 "@

@@ -138,7 +138,7 @@ Function MovePlots {
     $newPlotNamePath = "$finalSelectDisk$newPlotLogName"
 
     # Get plot name
-    $newPlotName = $newPlotNamePath.Substring(0, $newPlotNamePath.Length-9)
+    $newPlotName = $newPlotLogName.Substring(0, $newPlotLogName.Length-9)
 
     # Log creation if logs are enabled
     if($config["logsMoved"])
@@ -147,7 +147,7 @@ Function MovePlots {
         $newPlotLogName = $config["logDir"] + "Moved_" + $newPlotName + ".log"
 
         # Starts the creation of plots with logs
-         $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; robocopy $($config["tmpDir"]) $finalSelectDisk *.plotMove /unilog:'$newPlotLogName' /tee /mov; rename-item -path '$newPlotNamePath' -NewName '$newPlotName.plot'; exit"
+        $startMovePlots.Arguments = "-NoExit -windowstyle Minimized -Command `$Host.UI.RawUI.WindowTitle='MovePlots'; robocopy $($config["tmpDir"]) $finalSelectDisk *.plotMove /unilog:'$newPlotLogName' /tee /mov; rename-item -path '$newPlotNamePath' -NewName '$newPlotName.plot'; exit"
 
         # Display information
         PrintMsg -msg $UTlang.LogsInProgress -msg2 "$newPlotLogName" -blu $true
@@ -181,67 +181,37 @@ function CreatePlots {
     # Set buckets3 if active
     if(!($config["buckets3"])){$config["buckets3"] = ""}
 
-    # Log creation if logs are enabled
-    if($config["logs"])
+    # Starts the creation of plots without logs
+    if(!([string]::IsNullOrEmpty($config["poolContract"])))
     {
-        # Plot log name
-        $newPlotLogName1 = $($config["logDir"]) + "Create_" + $dateTime + ".log"
-
-        # Display information
-        PrintMsg -msg $UTlang.LogsInProgress -msg2 "$newPlotLogName1"
-
-        # Takes a break
-        start-sleep -s $smallTime
-
-        # Display information
-        PrintMsg -msg $UTlang.LaunchCreatePlot
-
-        # Takes a break
-        start-sleep -s $smallTime
-
-        # Starts the creation of plots without logs
-        if(!([string]::IsNullOrEmpty($config["poolContract"])))
-        {
-            $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --contract $($config["poolContract"]) --count 1 | tee "$newPlotLogName1" | Out-Default
-        }
-        else
-        {
-            $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $($config["poolKey"]) --count 1 | tee "$newPlotLogName1" | Out-Default
-        }
-
-        # Get log name
-        $plotNameLogName = Get-Content -Path "$newPlotLogName1" | where {$_ -match "plot-k32-"}
-
-        # Plot log name
-        $newPlotLogName2 = $config["logDir"] + "Create_" + $plotNameLogName.Substring(11,$plotNameLogName.Length-11) + ".log"
-
-        # Rename log with plot name
-        $renameCreatedLog = Rename-Item -Path "$newPlotLogName1" -NewName "$newPlotLogName2"
+        $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --contract $($config["poolContract"]) --count 1 | Tee-Object -Variable plotLog | Out-Default
     }
     else
     {
-        # Takes a break
-        start-sleep -s $smallTime
+        $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $($config["poolKey"]) --count 1 | Tee-Object -Variable plotLog | Out-Default
+    }
 
-        # Starts the creation of plots without logs
-        if(!([string]::IsNullOrEmpty($config["poolContract"])))
-        {
-            $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --contract $($config["poolContract"]) --count 1 | Out-Default
-        }
-        else
-        {
-            $processCreatePlots = ."$($config["chiaPlotterLoc"])\chia_plot.exe" --threads $config["threads"] --buckets $config["buckets"] --buckets3 $config["buckets3"] --tmpdir $config["tmpDir"] --tmpdir2 $config["tmpDir2"] --tmptoggle $config["tmpToggle"] --farmerkey $config["farmerKey"] --poolkey $($config["poolKey"]) --count 1 | Out-Default
-        }
+    $plotName = $plotLog | where {$_ -match "plot-k32-"}
+    $plotName = $plotName.Substring(11,$plotName.Length-11)
+
+    # Log creation if logs are enabled
+    if($config["logs"])
+    {
+        # Write log file
+        Out-File -FilePath "$($config["logDir"])Create_$($plotName).log" -InputObject $plotLog -Encoding UTF8
     }
 
     # Rename plot for move
-    $plotReName = get-childitem -Path $($config["tmpDir"]) *.plot | rename-item -NewName {$_.name -replace '.plot','.plotMove'}
+    if(Test-Path -Path "$($plotName).plot")
+    {
+        Rename-Item -Path "$($config["tmpDir"])$($plotName).plot" -NewName "$($plotName).plotMove"
+    }
 
-    # Get plot name
-    $plotName = get-childitem -Path $($config["tmpDir"]) *.plotMove
+    # Remove all tmp after failed
+    Remove-Item "$($config["tmpDir"])$($plotName)*.tmp"
 
     # Get process id
-    return $plotName
+    return "$($plotName).plotMove"
 }
 
 Function CreateFolder {
