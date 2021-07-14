@@ -43,9 +43,6 @@ $CPlang = Import-LocalizedData -BaseDirectory "Scripts\Lang"
 # Importing functions
 ."$scriptDir\Utility.ps1"
 
-# Check script version
-CheckNewPackageVersion
-
 # Get config.yaml file
 [string[]]$fileContent = Get-Content "config.yaml"
 $content = ''
@@ -61,6 +58,9 @@ $global:midTime = 3
 $global:bigTime = 5
 $global:winHeight = 10
 $global:winWidth  = 220
+
+# Check script version
+CheckNewPackageVersion
 
 # Set default tmpDir2 directory if not specified
 if([string]::IsNullOrEmpty($config["tmpDir2"]))

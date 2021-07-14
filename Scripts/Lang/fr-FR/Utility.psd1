@@ -15,6 +15,6 @@ ConvertFrom-StringData @"
     FolderNotFound = Le dossier n'existe pas
     CreateIt = ,vous devez le créer avant de lancer le script 
     ClickToExit = Appuyez sur ENTREE pour quitter...
-    NeedUpdate = Une mise à jour du script est disponible, merci de le mettre à jour sur https://github.com/Maxxxi/PowershellForMadmax
+    NeedUpdate = Mise à jour du script disponible, penez à le mettre à jour sur https://github.com/Maxxxi/PowershellForMadmax
     TitleUpdate = Mise à jour disponible
 "@
