@@ -202,7 +202,7 @@ function CreatePlots {
     }
 
     # Rename plot for move
-    if(Test-Path -Path "$($plotName).plot")
+    if(Test-Path -Path "$($config["tmpDir"])$($plotName).plot")
     {
         Rename-Item -Path "$($config["tmpDir"])$($plotName).plot" -NewName "$($plotName).plotMove"
     }
