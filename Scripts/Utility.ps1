@@ -298,17 +298,7 @@ Function CheckNewPackageVersion {
         PrintMsg -msg $UTlang.NeedUpdate -textColor "Red" -backColor "Black" -sharpColor "Red"
 
         # Takes a break
-        start-sleep -s $bigTime
-
-        # Create Message box
-        #$msgUpd = [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
-        #$msgUpd2 = [System.Windows.Forms.MessageBox]::Show($UTlang.NeedUpdate, $UTlang.TitleUpdate, 1)
-
-        # Exit if Ok is clicked
-        #if ($msgUpd2 -eq "Ok")
-        #{
-        #    Start-Process "https://github.com/Maxxxi/PowershellForMadmax/releases/tag/$tagID"
-        #}
+        start-sleep -s $smallTime
     }
     # url version file
     $softApiID = [string]"$scriptDir\Version.txt"
@@ -319,19 +309,10 @@ Function CheckNewPackageVersion {
     # if current version equal or less than 
     if($currentID -lt $tagID)
     {
-        PrintMsg -msg $UTlang.NeedUpdate -textColor "Red" -backColor "Black" -sharpColor "Red"
+        PrintMsg -msg $UTlang.NewVersion -msg2 $tagID -msg3 $UTlang.NeedUpdate -textColor "Green" -backColor "Black" -sharpColor "Red"
 
         # Takes a break
-        start-sleep -s $bigTime
-
-        # Create Message box
-        #$msgUpd = [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
-        #$msgUpd2 = [System.Windows.Forms.MessageBox]::Show($UTlang.NeedUpdate, $UTlang.TitleUpdate, 1)
-
-        # Exit if Ok is clicked
-        #if ($msgUpd2 -eq "Ok")
-        #{
-        #   Start-Process "https://github.com/Maxxxi/PowershellForMadmax/releases/tag/$tagID"
-        #}
+        start-sleep -s $smallTime
     }
+    return , $currentID, $tagID
 }

@@ -5,7 +5,7 @@ $Host.UI.RawUI.BackgroundColor = "Black"
 $Host.UI.RawUI.ForegroundColor = "Yellow"
 
 # Make name to window
-$Host.UI.RawUI.WindowTitle = "PowerShell For madMAx"
+$Host.UI.RawUI.WindowTitle = "PowershellForMadMax"
 
 # Get path file
 $global:scriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
@@ -22,8 +22,10 @@ $checkExecutionPolicy = "Unrestricted"
 # Check if policy is Unrestricted
 if(!([string]$GetExecutionPolicy -eq "$checkExecutionPolicy"))
 {
+    # check admin access
     $currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
     $testadmin = $currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+
     if ($testadmin -eq $false)
     {
         Start-Process powershell.exe -windowstyle hidden -Verb RunAs -ArgumentList ('-noprofile -noexit -file "{0}" -elevated' -f ($myinvocation.MyCommand.Definition))
@@ -59,8 +61,14 @@ $global:bigTime = 5
 $global:winHeight = 10
 $global:winWidth  = 220
 
-# Check script version
-CheckNewPackageVersion
+# Check version
+$version = CheckNewPackageVersion
+
+# Condition if new version
+if($($version[0]) -lt $($version[1])){$newVersion = " | $($CPlang.NewVersion) $($version[1])"}else{$newVersion = ""}
+
+# Rename window with current version and new version id
+$Host.UI.RawUI.WindowTitle = "PowershellForMadMax | $($CPlang.OldVersion) $($version[0])$newVersion"
 
 # Set default tmpDir2 directory if not specified
 if([string]::IsNullOrEmpty($config["tmpDir2"]))
@@ -72,11 +80,9 @@ if([string]::IsNullOrEmpty($config["tmpDir2"]))
 # Set log folder
 if($config["logs"] -or $config["logsMoved"])
 {
+    # Define log path
     $config["logDir"] = $scriptDir.Substring(0,$scriptDir.Length-8) + "\logs\"
-    if(!(Test-Path $config["logDir"]))
-    {
-        CreateFolder -folder $config["logDir"]
-    }
+    if(!(Test-Path $config["logDir"])){CreateFolder -folder $config["logDir"]}
 }
 
 # Check if config is ok
@@ -97,6 +103,7 @@ if( ($config["tmpToggle"]) -AND (($config["tmpDir2"] -eq $config["tmpDir"])))
 {
     # Display information
     $PrintMsgTmpToggle = $CPlang.tmpToggleDeactivate
+
     # Turn off
     $config["tmpToggle"] = $false
 }
@@ -140,6 +147,7 @@ $newPlotLogName = CreatePlots
 
 # Takes a break
 start-sleep -s $midTime
+
 # Check if chia_plot process is running
 if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
 {
@@ -152,6 +160,7 @@ if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
     {
         # Create folder
         CreateFolder -folder $finalSelectDisk
+
         # Takes a break
         start-sleep -s $smallTime
     }
@@ -160,7 +169,7 @@ if(!(Get-Process -NAME "chia_plot" -erroraction "silentlycontinue"))
     $finalSelectDisk = ValPath -path $finalSelectDisk
 
     # Takes a break
-    start-sleep -s $smallTime
+    start-sleep -s $midTime
 
     # Launch plot movement
     if(Test-Path -path "$($config["tmpDir"])$newPlotLogName")

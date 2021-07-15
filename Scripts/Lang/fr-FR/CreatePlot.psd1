@@ -10,4 +10,6 @@ ConvertFrom-StringData @"
     ResetVariablesInProgress = Réinitialisation des variables en cours...
     ResetVariables = Les variables tmpDir et finalDir ont été réinitialisées avec succès
     NotWorking = Le script s'est stoppé car une erreur est survenue
+    OldVersion = Version actuelle:
+    NewVersion = Nouvelle Version:
 "@
