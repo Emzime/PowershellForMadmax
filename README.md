@@ -35,7 +35,7 @@ Extrayez le dossier où vous voulez, remplissez le fichier config.yaml puis doub
 Il ne vous reste plus qu'à attendre que vos disques soient plein.
 
 # <u>Windows Protection</u>
-Ayant certain problème d'exécution avec quelques windows, veuillez faire un clique droit sur le fichier ZIP, aller dans propriété et cochez la case Débloquer<br>
+Ayant certain problème d'exécution avec quelques windows, veuillez faire un clic droit sur le fichier ZIP, aller dans propriété et cochez la case Débloquer<br>
 Lancez une fenêtre powershell en administrateur et exécuter "Set-ExecutionPolicy -ExecutionPolicy Unrestricted -force"<br>
 Voir: image
 
