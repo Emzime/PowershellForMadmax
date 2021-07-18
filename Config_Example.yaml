@@ -12,6 +12,8 @@ farmerKey: 1234sf56579vfsd846976164458712348
 #poolKey: 1234sf56579vfsd846976164458712348ssqrzfqsgsqd
 # -c, --contract arg    | Pool Contract Address (64 chars)
 poolContract: xchqdqfdqf532434315638
+# Your madMax path
+chiaPlotterLoc: C:\Crypto\madMax v0.1.1
 # -t, --tmpdir arg      | Your temporary path
 tmpDir: H:\
 # -2, --tmpdir2 arg     | Your temporary directory 2 or RAMDISK or nothing
@@ -22,8 +24,6 @@ finalDir:
 - G:\MyPool
 - F:\
 - D:\AnotherPool
-# Your madMax path
-chiaPlotterLoc: C:\Crypto\madMax v0.1.1
 # Enable creating log   | true/false
 logs: false
 # Enable moving log     | true/false
