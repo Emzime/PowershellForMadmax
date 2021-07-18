@@ -15,7 +15,7 @@ All you have to do is wait until your disks are full
 
 # <u>Windows Protection</u>
 Having some execution problem with some windows pro version, please right click on the ZIP file, go to property and check the Unblock box<br>
-Launch a powershell window as administrator and run "Set-ExecutionPolicy -ExecutionPolicy Unrestricted -force"<br>
+Launch a powershell window as administrator and run "Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -force"<br>
 See: image
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ Il ne vous reste plus qu'à attendre que vos disques soient plein.
 
 # <u>Windows Protection</u>
 Ayant certain problème d'exécution avec quelques windows, veuillez faire un clic droit sur le fichier ZIP, aller dans propriété et cochez la case Débloquer<br>
-Lancez une fenêtre powershell en administrateur et exécuter "Set-ExecutionPolicy -ExecutionPolicy Unrestricted -force"<br>
+Lancez une fenêtre powershell en administrateur et exécuter "Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -force"<br>
 Voir: image
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
