@@ -179,7 +179,7 @@ Function MovePlots {
 # Launching the plot creation
 function CreatePlots {
     # Set buckets3 if active
-    if(!($config["buckets3"])){$config["buckets3"] = ""}
+    if(!($config["buckets3"])){$config["buckets3"] = "$config["buckets"]"}
 
     # Starts the creation of plots without logs
     if(!([string]::IsNullOrEmpty($config["poolContract"])))
