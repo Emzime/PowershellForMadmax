@@ -1,6 +1,5 @@
 # <u>Update</u>
-20/09/2021
-<br>
+20/09/2021 <br>
    - fixed a bug if bucket3 was not filled
 <br>
 14/07/2021
