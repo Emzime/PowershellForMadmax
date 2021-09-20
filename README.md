@@ -1,15 +1,19 @@
 # <u>Update</u>
-20/09/2021  - fixed a bug if bucket3 was not filled
+20/09/2021
 <br>
-14/07/2021  - update robocopy
-            <br>
-            - Fixed robocopy not moving plots when log mode is on
-            <br>
-            - Removed the popup that displayed if an update was available
-            <br>
-            - Add a message if an update is available
-            <br>
-            - Remove windowSize function
+   - fixed a bug if bucket3 was not filled
+<br>
+14/07/2021
+<br>
+   - update robocopy
+   <br>
+   - Fixed robocopy not moving plots when log mode is on
+   <br>
+   - Removed the popup that displayed if an update was available
+   <br>
+   - Add a message if an update is available
+   <br>
+   - Remove windowSize function
 
 # <u>What it does</u>
 Powershell script usable for <a href="https://github.com/stotiks/chia-plotter/releases" target="_blank" />madMax v0.1.1 chia plotter Windows version</a> that manages the space<br>
@@ -26,17 +30,21 @@ See: image
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 # <u>Mise à jour</u>
-20/09/2021  - Correction d'un bug quand bucket3 n'était pas rempli
+20/09/2021
 <br>
-14/07/2021  - Mise à jour de la robocopy
-            <br>
-            - Correction de la robocopy qui ne déplaçait pas les parcelles en mode log activé
-            <br>
-            - Suppression de la popup qui affichait si une mise à jour était disponible
-            <br>
-            - Ajout d'un message si une mise à jour est disponible
-            <br>
-            - Suppression de la fonction windowSize
+   - Correction d'un bug quand bucket3 n'était pas rempli
+<br>
+14/07/2021
+<br>
+   - Mise à jour de la robocopy
+   <br>
+   - Correction de la robocopy qui ne déplaçait pas les parcelles en mode log activé
+   <br>
+   - Suppression de la popup qui affichait si une mise à jour était disponible
+   <br>
+   - Ajout d'un message si une mise à jour est disponible
+   <br>
+   - Suppression de la fonction windowSize
 
 # <u>Ce qu'il fait</u>
 Script Powershell utilisable pour <a href="https://github.com/stotiks/chia-plotter/releases" target="_blank" />madMax v0.1.1 chia plotter version Windows</a> qui gère l'espace<br> 
