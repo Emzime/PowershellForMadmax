@@ -1,5 +1,6 @@
 # <u>Update</u>
 20/09/2021  - fixed a bug if bucket3 was not filled
+<br>
 14/07/2021  - update robocopy
             - Fixed robocopy not moving plots when log mode is on
             - Removed the popup that displayed if an update was available
@@ -22,6 +23,7 @@ See: image
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 # <u>Mise à jour</u>
 20/09/2021  - Correction d'un bug quand bucket3 n'était pas rempli
+<br>
 14/07/2021  - Mise à jour de la robocopy
             - Correction de la robocopy qui ne déplaçait pas les parcelles en mode log activé
             - Suppression de la popup qui affichait si une mise à jour était disponible
